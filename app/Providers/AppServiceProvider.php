@@ -40,11 +40,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       \URL::forceScheme('https');
-    //   User::all()->each(function ($user)  {
-    //         $user->assignRole('filament_user');
-    //     });
-        
+
         Validator::extend('triple_name', function ($attribute, $value, $parameters, $validator) {
             $names = explode(' ', $value);
             return count($names) >= 3;

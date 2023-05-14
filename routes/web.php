@@ -33,3 +33,7 @@ Route::get('/about', [HomeController::class, 'about']);
 Route::get('/contact', [HomeController::class, 'contact']);
 
 Route::get('/reset-passwords/{token}', ResetPassword::class)->middleware(['guest'])->name('password.reset');
+
+Route::get('/test', function () {
+    return "test";
+});
