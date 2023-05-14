@@ -62,8 +62,8 @@ class ThreeDResource extends Resource
                     ->label(__('File Description'))
                     ->required(),
                 TimePicker::make('duration')->label(__('duration'))->required(),
-                TextInput::make('weight')->label('weight')->required(),
-                TextInput::make('purpose')->label('purpose')->required(),
+                TextInput::make('weight')->label(__('weight'))->required(),
+                TextInput::make('purpose')->label(__('purpose'))->required(),
                 Select::make('status')
                     ->options([
                         0 => __('Waiting'),

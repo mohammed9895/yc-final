@@ -5,19 +5,25 @@ namespace App\Filament\Pages;
 use App\Models\Field;
 use App\Models\Company;
 use Filament\Pages\Page;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
+use App\Filament\Resources\UserResource;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Tables\Concerns\InteractsWithTable;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
-class RegisterYourCompany extends Page implements HasForms
+class RegisterYourCompany extends Page implements HasForms, HasTable
 
 {
-    use InteractsWithForms, HasPageShield;
+    use InteractsWithForms, HasPageShield, InteractsWithTable;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.register-your-company';
@@ -101,7 +107,34 @@ class RegisterYourCompany extends Page implements HasForms
                         FileUpload::make('VAT_ceritifcate_copy')->label(__('VAT_ceritifcate_copy')),
                         FileUpload::make('readah_ceritifcate_copy')->label(__('readah_ceritifcate_copy')),
                     ]),
-            ])
+            ])->submitAction(new HtmlString(html: '<button type="submit" class="filament-button filament-button-size-sm inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset dark:focus:ring-offset-0 min-h-[2rem] px-3 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Register</button>'))
+        ];
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return Company::query()->where('user_id', auth()->id());
+    }
+
+    protected function getTableColumns(): array
+    {
+        return [
+            TextColumn::make('user.name')
+                ->label(__('User'))
+                ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
+                ->openUrlInNewTab(),
+            TextColumn::make('name')->label(__('Name')),
+            TextColumn::make('cr_number')->label(__('cr_number')),
+            TextColumn::make('about')->label(__('about')),
+            TextColumn::make('filed')->label(__('filed')),
+            TextColumn::make('owner_fullname')->label(__('owner_fullname')),
+            TextColumn::make('owner_phone')->label(__('owner_phone')),
+            TextColumn::make('owner_email')->label(__('owner_email')),
+            TextColumn::make('owner_civil_id')->label(__('owner_civil_id')),
+            TextColumn::make('created_at')->label(__('created_at'))
+                ->dateTime(),
+            TextColumn::make('updated_at')->label(__('updated_at'))
+                ->dateTime(),
         ];
     }
 

@@ -70,6 +70,7 @@ class Profile extends BaseProfile
             Select::make('employee_type_id')->label(__('filament::users.work'))->options(EmployeeType::all()->pluck('name', 'id'))->searchable()->required(),
             Select::make('preferred_language')
                 ->label('Preferred Communication Language')
+                ->searchable()
                 ->options(
                     [
                         'en' => 'English',
