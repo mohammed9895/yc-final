@@ -1,0 +1,67 @@
+<?php
+
+return [
+
+    'navigationLabel' => 'المستخدمين',
+    'navigationLabelSingelr' => 'المستخدم',
+
+    'name' => 'الاسم',
+    'id_number' => 'الرقم المدني',
+    'email' => 'البريد الالكتروني',
+    'password' => 'كلمة المرور',
+    'phone' => 'رقم الهاتف',
+    'email_verified_at' => 'تم التحقق من البريد الالكتروني في',
+    'disability' => 'الاعاقة',
+    'none-disability' => 'لا توجد',
+    'physical-disability' => 'اعاقة حركية',
+    'visual-disability' => 'اعاقة بصرية',
+    'hearing-disability' => 'اعاقة سمعية',
+    'mental-disability' => 'اعاقة نفسية',
+    'intellectual-disability' => 'اعاقة عقلية',
+    'multiple-disability' => 'اعاقة متعددة',
+    'sex' => 'الجنس',
+    'male' => 'ذكر',
+    'female' => 'انثى',
+    'citizin' => 'مواطن',
+    'coutry' => 'الدولة',
+    'foreigner' => 'مقيم',
+    'governorate' => 'المحافظة',
+    'degree' => 'الدرجة العلمية',
+    'work' => 'العمل',
+    'avatar' => 'الصورة الشخصية',
+    'governorates' => [
+        'muscat' => 'مسقط',
+        'north_batinah' => 'شمال الباطنة',
+        'south_batinah' => 'جنوب الباطنة',
+        'north_sharqiyah' => 'شمال الشرقية',
+        'south_sharqiyah' => 'جنوب الشرقية',
+        'dhofar' => 'ظفار',
+        'alwusta' => 'الوسطى',
+        'dakhiliyah' => 'الداخلية',
+        'dhahirah' => 'الظاهرة',
+        'alburaimi' => 'البريمي',
+        'musandam' => 'مسندم',
+    ],
+    'degres' => [
+        'student' => 'طالب',
+        'high_school' => 'دبلوم التعليم العام',
+        'diploma' => 'دبلوم',
+        'higher_diploma' => 'دبلوم عالي',
+        'bachelor' => 'بكالوريوس',
+        'master' => 'ماجستير',
+        'doctorate' => 'دكتوراه',
+    ],
+    'works' => [
+        'student' => 'طالب',
+        'employed_government' => 'موظف حكومي',
+        'unemployed' => 'باحث عن عمل',
+        'employed_private' => 'موظف قطاع خاص',
+        'free_lancer' => 'مستقل',
+        'other' => 'أخرى',
+    ],
+
+    'workshop' => [
+        'attend' => 'أحجز مقعدك',
+        'title' => 'البرامج المتوفرة'
+    ],
+];

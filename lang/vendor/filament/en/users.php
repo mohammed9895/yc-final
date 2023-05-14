@@ -1,0 +1,67 @@
+<?php
+
+return [
+
+    'navigationLabel' => 'Users',
+    'navigationLabelSingelr' => 'User',
+
+    'name' => 'Name',
+    'id_number' => 'Civil Number',
+    'email' => 'Email',
+    'password' => 'Password',
+    'phone' => 'Phone',
+    'email_verified_at' => 'Email Verified At',
+    'disability' => 'Disability',
+    'none-disability' => 'None',
+    'physical-disability' => 'Physical Disability',
+    'visual-disability' => 'اعاقة بصرية',
+    'hearing-disability' => 'اعاقة سمعية',
+    'mental-disability' => 'اعاقة نفسية',
+    'intellectual-disability' => 'اعاقة عقلية',
+    'multiple-disability' => 'اعاقة متعددة',
+    'sex' => 'Gender',
+    'male' => 'Male',
+    'female' => 'Female',
+    'citizin' => 'Citizen',
+    'coutry' => 'Country',
+    'foreigner' => 'Foreigner',
+    'governorate' => 'Province',
+    'state' => 'State',
+    'degree' => 'Degree',
+    'work' => 'Work',
+    'avatar' => 'Avatar',
+    'governorates' => [
+        'muscat' => 'مسقط',
+        'north_batinah' => 'شمال الباطنة',
+        'south_batinah' => 'جنوب الباطنة',
+        'north_sharqiyah' => 'شمال الشرقية',
+        'south_sharqiyah' => 'جنوب الشرقية',
+        'dhofar' => 'ظفار',
+        'alwusta' => 'الوسطى',
+        'dakhiliyah' => 'الداخلية',
+        'dhahirah' => 'الظاهرة',
+        'alburaimi' => 'البريمي',
+        'musandam' => 'مسندم',
+    ],
+    'degres' => [
+        'student' => 'طالب',
+        'high_school' => 'دبلوم التعليم العام',
+        'diploma' => 'دبلوم',
+        'higher_diploma' => 'دبلوم عالي',
+        'bachelor' => 'بكالوريوس',
+        'master' => 'ماجستير',
+        'doctorate' => 'دكتوراه',
+    ],
+    'works' => [
+        'student' => 'طالب',
+        'employed_government' => 'موظف حكومي',
+        'unemployed' => 'باحث عن عمل',
+        'employed_private' => 'موظف قطاع خاص',
+        'free_lancer' => 'مستقل',
+        'other' => 'أخرى',
+    ],
+
+    'workshop' => [
+        'attend' => 'Attend Now'
+    ],
+];
