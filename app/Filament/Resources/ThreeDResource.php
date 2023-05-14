@@ -34,6 +34,21 @@ class ThreeDResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('halls');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return   __('3d booking');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return   __('3d booking');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
