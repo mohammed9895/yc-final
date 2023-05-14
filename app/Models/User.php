@@ -17,15 +17,7 @@ use App\Interfaces\MustVerifyMobile as IMustVerifyMobile;
 class User extends Authenticatable implements HasAvatar
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
-    
-    // protected static function boot()
-    // {
-    //     parent::boot();
 
-    //     static::created(function($user) {
-    //         $user->assignRole(config('filament_user'));
-    //     });
-    // }
 
     /**
      * The attributes that are mass assignable.
@@ -73,6 +65,7 @@ class User extends Authenticatable implements HasAvatar
     {
         return $this->belongsTo(Disability::class);
     }
+
 
     public function state()
     {
@@ -122,6 +115,11 @@ class User extends Authenticatable implements HasAvatar
     public function hasVerifiedPhone()
     {
         return !is_null($this->phone_verified_at);
+    }
+
+    public function threeD()
+    {
+        return $this->hasMany(ThreeD::class);
     }
 
     public function markPhoneAsVerified()
