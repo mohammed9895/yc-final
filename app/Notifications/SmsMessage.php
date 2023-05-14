@@ -12,6 +12,7 @@ class SmsMessage
     protected string $user;
     protected string $password;
     protected string $to;
+    protected string $lang;
     protected string $baseUrl;
     protected string $message;
     protected string $dryrun = 'no';
@@ -44,13 +45,24 @@ class SmsMessage
         return $this;
     }
 
+    public function lang($lang): self
+    {
+        if ($lang == 'ar') {
+            $this->lang = '64';
+        } else {
+            $this->lang = '0';
+        }
+
+        return $this;
+    }
+
     public function send(): mixed
     {
         if (!$this->to || !$this->message) {
             throw new \Exception('SMS not correct.');
         }
 
-        return Http::post('' . $this->baseUrl . '?UserId=' . $this->user . '&Password=' . $this->password . '&MobileNo=' . $this->to . '&Message=' . $this->message . '&PushDateTime=10/12/2022 02:03:00&Lang=0&FLashSMS=N');
+        return Http::post('' . $this->baseUrl . '?UserId=' . $this->user . '&Password=' . $this->password . '&MobileNo=' . $this->to . '&Message=' . $this->message . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $this->lang . '&FLashSMS=N');
     }
 
     public function dryrun($dry = 'yes'): self

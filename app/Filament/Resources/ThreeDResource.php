@@ -6,18 +6,25 @@ use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
 use App\Models\ThreeD;
+use App\Channels\SmsChannel;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
+use App\Notifications\SmsMessage;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Config;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Illuminate\Database\Eloquent\Builder;
+use App\Notifications\OmantelSMSNotification;
 use App\Filament\Resources\ThreeDResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ThreeDResource\RelationManagers;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TimePicker;
-use Filament\Tables\Columns\TextColumn;
 
 class ThreeDResource extends Resource
 {
@@ -59,12 +66,43 @@ class ThreeDResource extends Resource
                 TextColumn::make('duration')->label(__('File Description')),
                 TextColumn::make('weight')->label('weight'),
                 TextColumn::make('purpose')->label('purpose'),
+                Tables\Columns\BadgeColumn::make('status')->label(__('status'))->enum([
+                    0 => __('Waiting'),
+                    1 => __('Rejected'),
+                    2 => __('Approvied')
+                ]),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('approve')
+                    ->label(__('approve'))
+                    ->action('approve')
+                    ->action(function (ThreeD $record) {
+                        $user = User::where('id', $record->user_id)->first();
+
+                        $sms = new SmsMessage;
+
+                        if ($user->preferred_language == 'ar') {
+                            $sms->to($user->phone)
+                                ->message('تم قبول حجزك لمختبر طباعة ثلاثية الأبعاد')
+                                ->lang($user->preferred_language)
+                                ->send();
+                        } else {
+                            $sms->to($user->phone)
+                                ->message('Your reservation for a 3D printing lab has been accepted')
+                                ->lang($user->preferred_language)
+                                ->send();
+                        }
+
+                        ThreeD::where('id', $record->id)->update(['status' => 2]);
+                    })
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    // ->hidden(fn (ThreeD $record) => $record->status === 2)
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
