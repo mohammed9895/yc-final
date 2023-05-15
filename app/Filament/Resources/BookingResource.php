@@ -108,7 +108,7 @@ class BookingResource extends Resource
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
-                Tables\Columns\TextColumn::make('answers')->label(__('answers'))->searchable(),
+                // Tables\Columns\TextColumn::make('answers')->label(__('answers'))->searchable(),
                 Tables\Columns\TextColumn::make('rejection_message')->label(__('rejection_message')),
                 Tables\Columns\BadgeColumn::make('status')->label(__('status'))->enum([
                     0 => __('Waiting'),
@@ -314,6 +314,7 @@ class BookingResource extends Resource
                             ])
                     ]),
                 Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export'),
             ]);
     }
 
