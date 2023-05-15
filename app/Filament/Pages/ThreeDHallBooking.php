@@ -8,6 +8,7 @@ use Filament\Pages\Page;
 use App\Notifications\SmsMessage;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
@@ -51,6 +52,7 @@ class ThreeDHallBooking extends Page implements HasForms, HasTable
             TimePicker::make('duration')->label(__('duration'))->required(),
             TextInput::make('weight')->label(__('weight'))->required(),
             TextInput::make('purpose')->label(__('purpose'))->required(),
+            Checkbox::make('protocols')->label(__('Accept Priniting Protocols'))->inline()->dehydrated()->required(),
         ];
     }
 

@@ -5,12 +5,14 @@ namespace App\Http\Livewire\User;
 use Carbon\Carbon;
 use Livewire\Event;
 use App\Models\Slot;
+use App\Models\User;
 use App\Models\Booking;
 use Livewire\Component;
 use App\Models\Evaluate;
 use App\Models\Workshop;
 use App\Models\Attendees;
 use setasign\Fpdi\Tfpdf\Fpdi;
+use App\Notifications\SmsMessage;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Columns\TextColumn;
@@ -47,9 +49,10 @@ class MyBookings extends Component implements HasTable
             TextColumn::make('reasone')->label(__('reasone')),
             BadgeColumn::make('status')->label(__('status'))
                 ->enum([
-                    0 => 'Waiting',
-                    1 => 'Rejected',
-                    2 => 'Approved'
+                    0 => __('Waiting'),
+                    1 => __('Rejected'),
+                    2 => __('Approvied'),
+                    3 => __('canceled'),
                 ])
                 ->colors([
                     'warning' => static fn ($state): bool => $state === 0,
@@ -112,7 +115,32 @@ class MyBookings extends Component implements HasTable
                         ->danger()
                         ->send();
                 }
-            }),
+            })->visible(fn (Booking $record) => $record->status == 2),
+            Action::make('cancel')
+                ->label(__('cancel'))
+                ->action('cancel')
+                ->action(function (Booking $record, array $data) {
+                    $workshop = Workshop::where('id', $record->workshop_id)->first();
+                    $user = User::where('id', $record->user_id)->first();
+
+                    $sms = new SmsMessage;
+
+                    if ($user->preferred_language == 'ar') {
+                        $sms->to($user->phone)
+                            ->message('تم الغاء حجزك في  ' . $workshop->title)
+                            ->lang($user->preferred_language)
+                            ->send();
+                    } else {
+                        $sms->to($user->phone)
+                            ->message('Your reservation for ' . $workshop->title . ' has been canceled')
+                            ->lang($user->preferred_language)
+                            ->send();
+                    }
+                    Booking::where('id', $record->id)->update(['status' => 3]);
+                })
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->hidden(fn (Booking $record) => $record->status === 3),
         ];
     }
 
