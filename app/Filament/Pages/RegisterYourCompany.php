@@ -28,6 +28,10 @@ class RegisterYourCompany extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.register-your-company';
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('companies');
+    }
 
     public function getTitle(): string
     {

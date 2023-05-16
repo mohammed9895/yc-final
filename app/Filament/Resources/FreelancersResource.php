@@ -22,6 +22,11 @@ class FreelancersResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('companies');
+    }
+
     public static function getModelLabel(): string
     {
         return   __('freelancers');

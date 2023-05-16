@@ -20,6 +20,11 @@ class StatisticeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('settings');
+    }
+
     public static function getModelLabel(): string
     {
         return   __('statistices');

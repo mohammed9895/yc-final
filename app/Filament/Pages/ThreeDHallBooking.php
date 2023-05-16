@@ -28,6 +28,11 @@ class ThreeDHallBooking extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.three-d-hall-booking';
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('halls');
+    }
+
     public function getTitle(): string
     {
         return   __('Book 3D Lab');

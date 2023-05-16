@@ -20,6 +20,10 @@ class PathResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('workshops');
+    }
 
     public static function getModelLabel(): string
     {

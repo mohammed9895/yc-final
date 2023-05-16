@@ -21,6 +21,11 @@ class RegisterAsFreelancer extends Page implements HasForms, HasTable
 {
     use InteractsWithForms,  InteractsWithTable;
 
+    protected static function getNavigationGroup(): ?string
+    {
+        return   __('companies');
+    }
+
     public function getTitle(): string
     {
         return   __('Register as Freelancer');
