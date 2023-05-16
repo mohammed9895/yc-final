@@ -76,7 +76,8 @@ class RegisterYourCompany extends Page implements HasForms, HasTable
                             ->maxLength(255),
                         Select::make('filed')
                             ->label(__('filed'))
-                            ->options(Field::all()->pluck('name', 'id'))
+                            ->options(Field::where('type', 'compnay')
+                                ->pluck('name', 'id'))
                             ->required(),
                     ]),
                 Wizard\Step::make(__('companyـowner'))
