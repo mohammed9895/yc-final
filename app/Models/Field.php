@@ -17,4 +17,9 @@ class Field extends Model
     {
         return $this->belongsTo(Compnay::class);
     }
+
+    public function freelancer()
+    {
+        return $this->belongsTo(Freelancers::class);
+    }
 }

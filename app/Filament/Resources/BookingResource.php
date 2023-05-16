@@ -134,6 +134,10 @@ class BookingResource extends Resource
                     ->multiple()
                     ->label(__('Workshop'))
                     ->options(Workshop::all()->pluck('title', 'id')),
+                SelectFilter::make('slot_id')
+                    ->multiple()
+                    ->label(__('Slot'))
+                    ->options(Slot::all()->pluck('name', 'id')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -146,12 +150,12 @@ class BookingResource extends Resource
                         $sms = new SmsMessage;
                         if ($user->preferred_language == 'ar') {
                             $sms->to($user->phone)
-                                ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop['title'] . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
+                                ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
                                 ->lang($user->preferred_language)
                                 ->send();
                         } else {
                             $sms->to($user->phone)
-                                ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop['title'] . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
+                                ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
                                 ->lang($user->preferred_language)
                                 ->send();
                         }
@@ -171,27 +175,29 @@ class BookingResource extends Resource
 
                         $sms = new SmsMessage;
 
+
+
                         if ($user->preferred_language == 'en') {
                             if ($data['rejection_reason'] == 'full') {
                                 $sms->to($user->phone)
-                                    ->message('Hello friend ' . $user->name . ' Thank you for registering in the (' . $workshop->title . ') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
+                                    ->message('Hello friend ' . $user->name . ' Thank you for registering in the (' . $workshop->getTranslation('title', 'en') . ') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
                                     ->lang($user->preferred_language)
                                     ->send();
                             } else {
                                 $sms->to($user->phone)
-                                    ->message('Welcome, ' . $user->name . '. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the (' . $workshop->title . ') program.')
+                                    ->message('Welcome, ' . $user->name . '. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the (' . $workshop->getTranslation('title', 'en') . ') program.')
                                     ->lang($user->preferred_language)
                                     ->send();
                             }
                         } else {
                             if ($data['rejection_reason'] == 'full') {
                                 $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->title . '). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
+                                    ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
                                     ->lang($user->preferred_language)
                                     ->send();
                             } else {
                                 $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->title . '). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
+                                    ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
                                     ->lang($user->preferred_language)
                                     ->send();
                             }
@@ -221,12 +227,12 @@ class BookingResource extends Resource
 
                         if ($user->preferred_language == 'ar') {
                             $sms->to($user->phone)
-                                ->message('تم الغاء حجزك في  ' . $workshop->title)
+                                ->message('تم الغاء حجزك في  ' . $workshop->getTranslation('title', 'ar'))
                                 ->lang($user->preferred_language)
                                 ->send();
                         } else {
                             $sms->to($user->phone)
-                                ->message('Your reservation for ' . $workshop->title . ' has been canceled')
+                                ->message('Your reservation for ' . $workshop->getTranslation('title', 'en') . ' has been canceled')
                                 ->lang($user->preferred_language)
                                 ->send();
                         }
@@ -248,12 +254,12 @@ class BookingResource extends Resource
                             $sms = new SmsMessage;
                             if ($user->preferred_language == 'ar') {
                                 $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop['title'] . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
+                                    ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
                                     ->lang($user->preferred_language)
                                     ->send();
                             } else {
                                 $sms->to($user->phone)
-                                    ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop['title'] . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
+                                    ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
                                     ->lang($user->preferred_language)
                                     ->send();
                             }
@@ -277,24 +283,24 @@ class BookingResource extends Resource
                             if ($user->preferred_language == 'en') {
                                 if ($data['rejection_reason'] == 'full') {
                                     $sms->to($user->phone)
-                                        ->message('Hello friend ' . $user->name . ' Thank you for registering in the (' . $workshop->title . ') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
+                                        ->message('Hello friend ' . $user->name . ' Thank you for registering in the (' . $workshop->getTranslation('title', 'en') . ') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 } else {
                                     $sms->to($user->phone)
-                                        ->message('Welcome, ' . $user->name . '. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the (' . $workshop->title . ') program.')
+                                        ->message('Welcome, ' . $user->name . '. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the (' . $workshop->getTranslation('title', 'en') . ') program.')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 }
                             } else {
                                 if ($data['rejection_reason'] == 'full') {
                                     $sms->to($user->phone)
-                                        ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->title . '). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
+                                        ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 } else {
                                     $sms->to($user->phone)
-                                        ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->title . '). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
+                                        ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 }
