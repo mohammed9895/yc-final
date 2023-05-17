@@ -14,6 +14,37 @@
 
                     {{ $this->form }}
 
+                    @foreach ($timings as $timing)
+                        <p>Start: {{ $timing['start'] }}</p>
+                        <p>End: {{ $timing['end'] }}</p>
+                        <hr>
+                    @endforeach
+
+                    @foreach ($timings as $timing)
+                        <p>Start: {{ $timing['start'] }}</p>
+                        <p>End: {{ $timing['end'] }}</p>
+                        <hr>
+                    @endforeach
+
+                    <div class="flex overflow-y-auto">
+                        @foreach ($slotsTimings as $timing)
+                            <div class="flex flex-col">
+                                @php
+                                    $isReserved = false;
+                                    foreach ($timings as $reservedTiming) {
+                                        if ($timing >= $reservedTiming['start'] && $timing < $reservedTiming['end']) {
+                                            $isReserved = true;
+                                            break;
+                                        }
+                                    }
+                                @endphp
+                                <input type="checkbox" wire:model="slots" value="{{ $timing }}"
+                                    class="w-12 h-12 rounded mb-2 ml-2 {{ $isReserved ? 'pointer-events-none bg-gray-500' : 'cursor-pointer bg-primary-500' }}">
+                                <div class="text-gray-600 text-xs text-center">{{ $timing }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+
                 </div>
             </div>
             <div class="space-y-2">

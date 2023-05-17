@@ -9,6 +9,7 @@ use App\Models\Hall;
 use App\Models\Event;
 use App\Models\Slot;
 use App\Models\Workshop;
+use Closure;
 use Livewire\Component;
 use Spatie\CalendarLinks\Link;
 use Forms\Components\TextInput;
@@ -36,9 +37,13 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
     public $reasone = '';
     public $start = '';
     public $end = '';
+    public $todayDate = '';
 
-    // public $data;
+    public $timings;
 
+    public $slots = [];
+
+    public $slotsTimings = ['08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM'];
 
     public function mount(Hall $hall)
     {
@@ -58,23 +63,12 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                     Forms\Components\TextInput::make('reasone')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\DateTimePicker::make('start')
+                    Forms\Components\DatePicker::make('date')
                         ->withoutSeconds()
                         ->minDate(now())
-                        ->minutesStep(30)
-                        ->weekStartsOnSunday()
                         ->reactive()
-                        ->required(),
-                    Forms\Components\DateTimePicker::make('end')
-                        ->withoutSeconds()
-                        ->minDate(function (callable $get) {
-                            return Carbon::parse($get('start'))->addHours(1);
-                        })
-                        ->maxDate(function (callable $get) {
-                            return Carbon::parse($get('start'))->addHours(4);
-                        })
+                        ->afterStateUpdated(fn (callable $set, $state) => $set('todayDate', $state))
                         ->weekStartsOnSunday()
-                        ->minutesStep(30)
                         ->required(),
                 ])
         ];
@@ -87,28 +81,37 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         $orginal['user_id'] = $this->user_id;
         $orginal['hall_id'] = $this->hall_id;
 
+        $startTime = min($this->slots);
+        $endTime = max($this->slots);
+
+
+        $startDateAndTime = Carbon::parse($orginal['date'] . $startTime);
+        $endDateAndTime = Carbon::parse($orginal['date'] . $endTime);
+
+        $orginal['start'] = $startDateAndTime;
+        $orginal['end'] = $endDateAndTime;
+
         $events = Event::where('hall_id', $this->hall_id)
-            ->where('start', '<', $orginal['end'])
-            ->where('end', '>', $orginal['start'])
+            ->where('start', '<', $endDateAndTime)
+            ->where('end', '>', $startDateAndTime)
             ->count();
 
-        // $slots = Workshop::where('hall_id', $this->hall_id)
-        //     ->with('slots')
-        //     ->where('slot.start_date', '<', $orginal['end'])
-        //     ->where('slot.end_date', '>', $orginal['start'])
-        //     ->where('slot.start_time', '<', $orginal['end'])
-        //     ->where('slot.end_time', '>', $orginal['start'])
-        //     ->count();
-        // dd($slots);
         if ($events > 0) {
             Notification::make()
                 ->title('This event timing is not available!')
                 ->warning()
                 ->send();
         } else {
-            if (Event::create($orginal)) {
-                $from = Carbon::parse($orginal['start']);
-                $to = Carbon::parse($orginal['end']);
+            if (Event::create([
+                'title' => $orginal['title'],
+                'user_id' => $orginal['user_id'],
+                'hall_id' => $orginal['hall_id'],
+                'reasone' => $orginal['reasone'],
+                'start' => $startDateAndTime,
+                'end' => $endDateAndTime
+            ])) {
+                $from = Carbon::parse($startDateAndTime);
+                $to = Carbon::parse($endDateAndTime);
                 $link = Link::create($orginal['title'], $from, $to)
                     ->description($orginal['reasone'])
                     ->address('Youth Center ' . $this->hall->name);
@@ -140,6 +143,22 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
 
     public function render()
     {
+
+        $events = Event::where('hall_id', $this->hall_id)
+            ->whereDate('start', '=', $this->todayDate)
+            ->get();
+
+        $reservedTimings = [];
+
+        foreach ($events as $event) {
+            $reservedTimings[] = [
+                'start' => Carbon::parse($event->start)->format('H:i A'),
+                'end' => Carbon::parse($event->end)->format('H:i A')
+            ];
+        }
+
+        $this->timings = $reservedTimings;
+
         return view('livewire.user.book-hall-model');
     }
 }

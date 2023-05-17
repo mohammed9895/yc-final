@@ -107,6 +107,12 @@ class BookingResource extends Resource
                     ->searchable()
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('user.phone')
+                    ->label(__('filament::users.phone'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label(__('filament::users.email'))
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
                 // Tables\Columns\TextColumn::make('answers')->label(__('answers'))->searchable(),
                 Tables\Columns\TextColumn::make('rejection_message')->label(__('rejection_message')),
