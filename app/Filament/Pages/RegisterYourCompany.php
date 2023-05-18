@@ -173,7 +173,7 @@ class RegisterYourCompany extends Page implements HasForms, HasTable
                     ->send();
             } else {
                 $sms->to(auth()->user()->phone)
-                    ->message('Thank you, your compnay have been successfuly registered successfuly')
+                    ->message('Thank you, your compnay have been registered successfuly')
                     ->lang(auth()->user()->preferred_language)
                     ->send();
             }

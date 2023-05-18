@@ -127,7 +127,7 @@ class RegisterAsFreelancer extends Page implements HasForms, HasTable
                     ->send();
             } else {
                 $sms->to(auth()->user()->phone)
-                    ->message('Thank you, You have been registered as fereelancer successfuly')
+                    ->message('Thank you, You have been registered as a freelancer successfuly')
                     ->lang(auth()->user()->preferred_language)
                     ->send();
             }
