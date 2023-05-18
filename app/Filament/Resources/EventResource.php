@@ -87,10 +87,8 @@ class EventResource extends Resource
                 Tables\Columns\TextColumn::make('hall.name')->sortable()->label(__('hall')),
                 Tables\Columns\TextColumn::make('title')->label(__('title')),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone')),
-                Tables\Columns\TextColumn::make('start')->label(__('start'))
-                    ->dateTime('M d, Y h:m'),
-                Tables\Columns\TextColumn::make('end')->label(__('end'))
-                    ->dateTime('M d, Y h:m'),
+                Tables\Columns\TextColumn::make('start')->label(__('start')),
+                Tables\Columns\TextColumn::make('end')->label(__('end')),
                 Tables\Columns\BadgeColumn::make('status')->enum([
                     0 => __('Waiting'),
                     1 => __('Approvied'),

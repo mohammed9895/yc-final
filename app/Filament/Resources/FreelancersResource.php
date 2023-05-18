@@ -5,16 +5,17 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Field;
 use App\Models\Freelancers;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FreelancersResource\Pages;
 use App\Filament\Resources\FreelancersResource\RelationManagers;
-use App\Models\Field;
 
 class FreelancersResource extends Resource
 {
@@ -49,13 +50,19 @@ class FreelancersResource extends Resource
                 Forms\Components\FileUpload::make('civil_copy')
                     ->label(__('Civil Copy'))
                     ->enableDownload()
-                    ->required(),
+                    ->required()
+                    ->reactive(),
                 Select::make('field_id')
                     ->label(__('Field'))
                     ->options(Field::where('type', 'freelancer')
                         ->pluck('name', 'id'))
                     ->searchable()
                     ->required(),
+                TextInput::make('others')->visible(function (callable $get) {
+                    if ($get('field_id') == 24) {
+                        return true;
+                    }
+                }),
                 Forms\Components\FileUpload::make('cr_copy')
                     ->enableDownload()
                     ->label(__('cr_copy')),

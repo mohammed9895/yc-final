@@ -1,4 +1,14 @@
 <div>
+    <style>
+        [type=checkbox]:checked,
+        [type=checkbox]:focus,
+        [type=checkbox]:active {
+            color: #9334e9;
+            border: none;
+            outline: none;
+            box-shadow: none;
+        }
+    </style>
     <div class="space-y-2">
         <div class="filament-modal-header px-6 py-2">
             <h2 class="filament-modal-heading text-xl font-bold tracking-tight">
@@ -14,33 +24,26 @@
 
                     {{ $this->form }}
 
-                    @foreach ($timings as $timing)
-                        <p>Start: {{ $timing['start'] }}</p>
-                        <p>End: {{ $timing['end'] }}</p>
-                        <hr>
-                    @endforeach
-
-                    @foreach ($timings as $timing)
-                        <p>Start: {{ $timing['start'] }}</p>
-                        <p>End: {{ $timing['end'] }}</p>
-                        <hr>
-                    @endforeach
-
-                    <div class="flex overflow-y-auto">
+                    <div class="flex overflow-x-auto overflow-y-hidden px-8">
                         @foreach ($slotsTimings as $timing)
-                            <div class="flex flex-col">
+                            <div class="flex flex-col justify-start items-start">
                                 @php
                                     $isReserved = false;
                                     foreach ($timings as $reservedTiming) {
-                                        if ($timing >= $reservedTiming['start'] && $timing < $reservedTiming['end']) {
+                                        $reservedStart = Carbon\Carbon::createFromFormat('h:i A', $reservedTiming['start']);
+                                        $reservedEnd = Carbon\Carbon::createFromFormat('h:i A', $reservedTiming['end']);
+                                        $currentTiming = Carbon\Carbon::createFromFormat('h:i A', $timing);
+                                        if ($currentTiming >= $reservedStart && $currentTiming < $reservedEnd) {
                                             $isReserved = true;
                                             break;
                                         }
                                     }
                                 @endphp
-                                <input type="checkbox" wire:model="slots" value="{{ $timing }}"
-                                    class="w-12 h-12 rounded mb-2 ml-2 {{ $isReserved ? 'pointer-events-none bg-gray-500' : 'cursor-pointer bg-primary-500' }}">
-                                <div class="text-gray-600 text-xs text-center">{{ $timing }}</div>
+                                <div>
+                                    <input type="checkbox" wire:model="slots" value="{{ $timing }}"
+                                        class="w-12 h-12 rounded border-0 mb-2 ml-4 appearance-none checked:text-primary-500 outline-none {{ $isReserved ? 'pointer-events-none bg-gray-500' : 'cursor-pointer bg-primary-200' }}">
+                                </div>
+
                             </div>
                         @endforeach
                     </div>

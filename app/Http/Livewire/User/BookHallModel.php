@@ -65,7 +65,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                         ->maxLength(255),
                     Forms\Components\DatePicker::make('date')
                         ->withoutSeconds()
-                        ->minDate(now())
+                        ->minDate(now()->today())
                         ->reactive()
                         ->afterStateUpdated(fn (callable $set, $state) => $set('todayDate', $state))
                         ->weekStartsOnSunday()
@@ -83,7 +83,6 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
 
         $startTime = min($this->slots);
         $endTime = max($this->slots);
-
 
         $startDateAndTime = Carbon::parse($orginal['date'] . $startTime);
         $endDateAndTime = Carbon::parse($orginal['date'] . $endTime);
@@ -146,14 +145,15 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
 
         $events = Event::where('hall_id', $this->hall_id)
             ->whereDate('start', '=', $this->todayDate)
+            ->where('status', 1)
             ->get();
 
         $reservedTimings = [];
 
         foreach ($events as $event) {
             $reservedTimings[] = [
-                'start' => Carbon::parse($event->start)->format('H:i A'),
-                'end' => Carbon::parse($event->end)->format('H:i A')
+                'start' => Carbon::parse($event->start)->format('h:i A'),
+                'end' => Carbon::parse($event->end)->format('h:i A')
             ];
         }
 

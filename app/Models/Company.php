@@ -10,10 +10,11 @@ class Company extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function company()
+    public function field()
     {
-        return $this->hasOne(Filed::class);
+        return $this->belongsTo(Field::class, 'field_id', 'id');
     }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

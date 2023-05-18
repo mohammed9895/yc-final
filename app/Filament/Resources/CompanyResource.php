@@ -89,12 +89,10 @@ class CompanyResource extends Resource
                         ->schema([
                             Forms\Components\FileUpload::make('cr_copy')
                                 ->label(__('cr_copy'))
+                                ->enableDownload()
                                 ->required(),
-                            Forms\Components\FileUpload::make('chamber_ceritifcate_copy')
-                                ->label(__('chamber_ceritifcate_copy'))
-                                ->required(),
-                            Forms\Components\FileUpload::make('VAT_ceritifcate_copy')->label(__('VAT_ceritifcate_copy')),
-                            Forms\Components\FileUpload::make('readah_ceritifcate_copy')->label(__('readah_ceritifcate_copy')),
+                            Forms\Components\FileUpload::make('VAT_ceritifcate_copy')->label(__('VAT_ceritifcate_copy'))->enableDownload(),
+                            Forms\Components\FileUpload::make('readah_ceritifcate_copy')->label(__('readah_ceritifcate_copy'))->enableDownload(),
                         ]),
                 ]),
             ])->columns(1);

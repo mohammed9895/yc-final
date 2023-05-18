@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Field;
 use Filament\Pages\Page;
 use App\Models\Freelancers;
+use App\Notifications\SmsMessage;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
@@ -57,7 +58,13 @@ class RegisterAsFreelancer extends Page implements HasForms, HasTable
                 ->options(Field::where('type', 'freelancer')
                     ->pluck('name', 'id'))
                 ->searchable()
+                ->reactive()
                 ->required(),
+            TextInput::make('others')->label('Others')->visible(function (callable $get) {
+                if ($get('field_id') == 24) {
+                    return true;
+                }
+            }),
             FileUpload::make('cr_copy')
                 ->enableDownload()
                 ->label(__('cr_copy')),
@@ -80,6 +87,7 @@ class RegisterAsFreelancer extends Page implements HasForms, HasTable
         return [
             TextColumn::make('user.name')->label(__('User')),
             TextColumn::make('field.name')->label(__('Field')),
+            TextColumn::make('others')->label(__('Others'))->visible(14 || 24),
             TextColumn::make('profile_link')->label(__('Profile Link')),
             TextColumn::make('created_at')
                 ->dateTime(),
@@ -106,10 +114,27 @@ class RegisterAsFreelancer extends Page implements HasForms, HasTable
     {
         $orginal = $this->form->getState();
         $orginal['user_id'] = auth()->id();
+        if ($orginal['field_id'] == 24) {
+            $orginal['others'] = $orginal['others'];
+        }
         $booking = Freelancers::create($orginal);
-        return Notification::make()
-            ->title(__('Booked Successfuly'))
-            ->success()
-            ->send();
+        if ($booking) {
+            $sms = new SmsMessage;
+            if (auth()->user()->preferred_language == 'ar') {
+                $sms->to(auth()->user()->phone)
+                    ->message('شكراً لك، تم تسجيلك كمستقل في مركز الشباب')
+                    ->lang(auth()->user()->preferred_language)
+                    ->send();
+            } else {
+                $sms->to(auth()->user()->phone)
+                    ->message('Thank you, You have been registered as fereelancer successfuly')
+                    ->lang(auth()->user()->preferred_language)
+                    ->send();
+            }
+            return Notification::make()
+                ->title(__('Registered Successfuly'))
+                ->success()
+                ->send();
+        }
     }
 }
