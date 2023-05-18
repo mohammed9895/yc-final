@@ -44,8 +44,8 @@ class AppServiceProvider extends ServiceProvider
         $users = User::all();
 
         foreach ($users as $user) {
-            if (!$user->avatar) {
-                $user->avatar = 'en';
+            if ($user->avatar == 'en') {
+                $user->avatar = 'user.jpg';
                 $user->save();
             }
         }
