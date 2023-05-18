@@ -41,14 +41,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        $users = User::all();
+        // $users = User::all();
 
-        foreach ($users as $user) {
-            if ($user->avatar == 'en') {
-                $user->avatar = 'user.jpg';
-                $user->save();
-            }
-        }
+        // foreach ($users as $user) {
+        //     if ($user->avatar == 'en') {
+        //         $user->avatar = 'user.jpg';
+        //         $user->save();
+        //     }
+        // }
 
         Validator::extend('triple_name', function ($attribute, $value, $parameters, $validator) {
             $names = explode(' ', $value);
