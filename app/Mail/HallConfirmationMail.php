@@ -3,11 +3,12 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class HallConfirmationMail extends Mailable
 {
@@ -54,7 +55,6 @@ class HallConfirmationMail extends Mailable
                 'user' => $this->user,
                 'start_time' => $this->start_time,
                 'end_time' => $this->end_time,
-                'link' => $this->link,
             ]
         );
     }
@@ -66,6 +66,17 @@ class HallConfirmationMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $base64String = $this->link;
+
+        $prefixToRemove = 'data:text/calendar;charset=utf8;base64,';
+        
+        $base64String = substr($base64String, strlen($prefixToRemove));
+
+        $decodedString = base64_decode($base64String);
+
+        return [
+            Attachment::fromData(fn () => $decodedString, 'Event.ics')
+                ->withMime('text/calendar'),
+        ];
     }
 }
