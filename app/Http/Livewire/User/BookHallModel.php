@@ -2,19 +2,21 @@
 
 namespace App\Http\Livewire\User;
 
-use Carbon\Carbon;
-use Filament\Forms;
-
-use App\Models\Hall;
-use App\Models\Event;
-use App\Models\Slot;
-use App\Models\Workshop;
 use Closure;
+use Carbon\Carbon;
+
+use Filament\Forms;
+use App\Models\Hall;
+use App\Models\Slot;
+use App\Models\Event;
 use Livewire\Component;
+use App\Models\Workshop;
 use Spatie\CalendarLinks\Link;
 use Forms\Components\TextInput;
+use App\Notifications\SmsMessage;
 use Filament\Forms\Components\Grid;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Forms\Components\MarkdownEditor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -43,6 +45,8 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
 
     public $slots = [];
 
+    public $counter = 0;
+
     public $slotsTimings = ['08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM'];
 
     public function mount(Hall $hall)
@@ -52,6 +56,17 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         $this->hall_id = $this->hall->id;
         $this->form->fill();
     }
+
+    public function toggleSlot($timing, $isSelected)
+    {
+        if ($isSelected) {
+            $this->counter++;
+        } else {
+            $this->counter--;
+        }
+    }
+
+
     protected function getFormSchema(): array
     {
         return [
@@ -59,12 +74,15 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                 ->schema([
                     Forms\Components\TextInput::make('title')
                         ->required()
+                        ->label(__('Title'))
                         ->maxLength(255),
                     Forms\Components\TextInput::make('reasone')
                         ->required()
+                        ->label(__('reasone'))
                         ->maxLength(255),
                     Forms\Components\DatePicker::make('date')
                         ->withoutSeconds()
+                        ->label(__('filament::yc.date'))
                         ->minDate(now()->today())
                         ->reactive()
                         ->afterStateUpdated(fn (callable $set, $state) => $set('todayDate', $state))
@@ -88,7 +106,12 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         $endDateAndTime = Carbon::parse($orginal['date'] . $endTime);
 
         $orginal['start'] = $startDateAndTime;
-        $orginal['end'] = $endDateAndTime;
+
+        if ($endTime != '10:00 PM') {
+            $orginal['end'] = $endDateAndTime->addMinutes(30);
+        } else {
+            $orginal['end'] = $endDateAndTime;
+        }
 
         $events = Event::where('hall_id', $this->hall_id)
             ->where('start', '<', $endDateAndTime)
@@ -96,8 +119,14 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             ->count();
 
         if ($events > 0) {
+            session()->flash('error', __('This booking timing is not available!'));
             Notification::make()
-                ->title('This event timing is not available!')
+                ->title(__('This booking timing is not available!'))
+                ->warning()
+                ->send();
+        } elseif (!$this->areSlotsConsecutive()) {
+            Notification::make()
+                ->title(__('The selected slots are not consecutive!'))
                 ->warning()
                 ->send();
         } else {
@@ -109,36 +138,71 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                 'start' => $startDateAndTime,
                 'end' => $endDateAndTime
             ])) {
-                $from = Carbon::parse($startDateAndTime);
-                $to = Carbon::parse($endDateAndTime);
-                $link = Link::create($orginal['title'], $from, $to)
-                    ->description($orginal['reasone'])
-                    ->address('Youth Center ' . $this->hall->name);
                 $this->closeModal();
                 Notification::make()
-                    ->title('You have booked your seat!')
+                    ->title(__('You have booked hall successfuly!'))
                     ->success()
                     ->persistent()
-                    ->actions([
-                        Action::make('add to Calender')
-                            ->button()
-                            ->url($link->ics())
-                    ])
+                    // ->actions([
+                    //     Action::make('add to Calender')
+                    //         ->button()
+                    //         ->url($link->ics())
+                    // ])
                     ->send();
 
-                $messageSms = '';
-
-                if (Config::get('app.locale') == 'ar') {
-                    $messageSms = "تم استلام طلبك حجزك ل " . $this->hall->name . ' سوف يتم تأكيد حجزك قريبًا';
+                $sms = new SmsMessage;
+                $user = auth()->user();
+                if ($user->preferred_language == 'ar') {
+                    $sms->to($user->phone)
+                        ->message('تم استلام طلبك حجزك ل ' . $this->hall->name . ' سوف يتم تأكيد حجزك قريبًا')
+                        ->lang($user->preferred_language)
+                        ->send();
                 } else {
-                    $messageSms = "Your reservation has been received for " . $this->hall->name . ', It will be confirmed soon.';
+                    $sms->to($user->phone)
+                        ->message("Your reservation has been received for " . $this->hall->name . ", It will be confirmed soon.")
+                        ->lang($user->preferred_language)
+                        ->send();
                 }
-
-                $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
-                $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('OMANTEL_USER') . '&Password=' . env('OMANTEL_PASSWORD') . '&MobileNo=' . Auth::user()->phone . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
             }
         }
     }
+
+    public function areSlotsConsecutive()
+    {
+        // Sort the slots in ascending order
+        sort($this->slots);
+
+        for ($i = 0; $i < count($this->slots) - 1; $i++) {
+            $currentSlot = Carbon::createFromFormat('h:i A', $this->slots[$i]);
+            $nextSlot = Carbon::createFromFormat('h:i A', $this->slots[$i + 1]);
+            $difference = $currentSlot->diffInMinutes($nextSlot);
+
+            // Check if the difference between two slots is not equal to 30 (or your slot interval)
+            if ($difference != 30) {
+                session()->flash('error', __('The selected slots are not consecutive!'));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function updated($propertyName)
+    {
+        if ($propertyName === 'date') {
+            $date = Carbon::parse($this->date);
+            $dayOfWeek = $date->dayOfWeek;
+
+            if ($dayOfWeek === Carbon::FRIDAY) {
+                // Assign your modified slots for Friday
+                $this->slotsTimings = ['01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM'];
+            } else {
+                // Assign your default slots for other days
+                $this->slotsTimings = ['08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM'];
+            }
+        }
+    }
+
 
     public function render()
     {

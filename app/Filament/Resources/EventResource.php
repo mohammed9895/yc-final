@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\Hall;
 use App\Models\User;
@@ -9,10 +10,14 @@ use Filament\Tables;
 use App\Models\Event;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
+use Spatie\CalendarLinks\Link;
 use Filament\Resources\Resource;
+use App\Notifications\SmsMessage;
+use App\Mail\HallConfirmationMail;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Config;
 use Filament\Tables\Actions\BulkAction;
@@ -142,15 +147,28 @@ class EventResource extends Resource
                             return;
                         }
                         $user = User::where('id', $record->user_id)->first();
-                        if (Config::get('app.locale') == 'ar') {
-                            $messageSms = "تم قبولك طلب حجزك للقاعة " . $record->hall->name . ' من ' . $record->start . ' الى ' . $record->end;
+
+                        $sms = new SmsMessage;
+                        if ($user->preferred_language == 'ar') {
+                            $sms->to($user->phone)
+                                ->message("تم قبولك طلب حجزك للقاعة " . $record->hall->name . ' من ' . $record->start . ' الى ' . $record->end)
+                                ->lang($user->preferred_language)
+                                ->send();
                         } else {
-                            $messageSms = "Your " . $record->hall->name . " reservation request has been accepted from " . $record->start . ' till ' . $record->end;
+                            $sms->to($user->phone)
+                                ->message("Your " . $record->hall->name . " reservation request has been accepted from " . $record->start . ' till ' . $record->end)
+                                ->lang($user->preferred_language)
+                                ->send();
                         }
 
-                        $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
-                        $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('User_ID_OTP', 'youthsmsweb') . '&Password=' . env('OTP_Password', 'L!ulid80') . '&MobileNo=' . $user['phone'] . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
+                        $from = Carbon::parse($record->start);
+                        $to = Carbon::parse($record->end);
 
+                        $link = Link::create($record->title, $from, $to)
+                            ->description($record->reasone)
+                            ->address('Youth Center ' . $record->hall->name);
+
+                        Mail::to($user->email)->send(new HallConfirmationMail($record->hall->name, $user, $record->start, $record->end, $link->ics()));
                         Event::where('id', $record->id)->update(['status' => 1]);
                     })
                     ->icon('heroicon-o-check-circle')
