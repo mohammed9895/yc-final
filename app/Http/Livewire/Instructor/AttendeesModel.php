@@ -99,7 +99,7 @@ class AttendeesModel extends ModalComponent implements Forms\Contracts\HasForms
     }
     public function render()
     {
-        $this->attendance = Booking::where('slot_id', '=', $this->slot_id)->get();
+        $this->attendance = Booking::where('slot_id', '=', $this->slot_id)->where('status', '=', 2)->get();
         $this->attendanceCount = Attendees::where('slot_id', '=', $this->slot_id)->whereDate('created_at', Carbon::today())->get();
         return view('livewire.instructor.attendees-model');
     }
