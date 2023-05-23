@@ -48,7 +48,13 @@ class AttendeesModel extends ModalComponent implements Forms\Contracts\HasForms
     {
         $this->step = 1;
         $this->workshop = $workshop;
-        $this->slots = Slot::where('start_date', '>=', Carbon::now())->orWhere('end_date', '>=', Carbon::now())->where('workshop_id', '=', $this->workshop->id)->with('bookings')->get();
+        $this->slots = Slot::where(function ($query) {
+            $query->where('start_date', '>=', Carbon::now())
+                ->orWhere('end_date', '>', Carbon::now());
+        })
+            ->where('workshop_id', $this->workshop->id)
+            ->with('bookings')
+            ->get();
     }
     public function moreStep()
     {
