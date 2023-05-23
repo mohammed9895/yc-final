@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\User;
 
+use App\Notifications\SmsMessage;
 use Carbon\Carbon;
 use App\Models\Slot;
 use App\Models\Booking;
@@ -50,14 +51,14 @@ class BookingModel extends ModalComponent
     {
         $bookings_count = Booking::where('workshop_id', '=', $this->workshop->id)->where('status', 2)->where('slot_id', '=', $this->slot_id)->count();
         if ($bookings_count < $this->workshop->capacity) {
-            $if_user_booked = Booking::where('workshop_id', '=', $this->workshop->id)->where('status', 2)->where('user_id', '=', Auth::id())->count();
+            $if_user_booked = Booking::where('workshop_id', '=', $this->workshop->id)->where('slot_id', $this->slot_id)->where('status', 2)->where('user_id', '=', Auth::id())->count();
             if ($if_user_booked == 0) {
                 $slot = Slot::where('id', '=', $this->slot_id)->first();
                 if($this->slot_id == null) {
                     $this->closeModal();
 
                     return Notification::make()
-                        ->title('Workshop is fully booked!')
+                        ->title('You have not choose a slot!')
                         ->danger()
                         ->send();
 
@@ -77,20 +78,25 @@ class BookingModel extends ModalComponent
                     ->success()
                     ->send();
 
-                $messageSms = '';
+                $user = auth()->user();
 
-                if (Config::get('app.locale') == 'ar') {
-                    $messageSms = "تم استلام طلبك للالتحاق ببرنامج " . $this->workshop->title . ' سنقوم بالتواصل معك بعد عملية الفرز ';
+                $sms = new SmsMessage;
+                if ($user->preferred_language == 'ar') {
+                    $sms->to($user->phone)
+                        ->message("تم استلام طلبك للالتحاق ببرنامج " . $this->workshop->getTranslation('title', 'ar') . 'سنقوم بالتواصل معك بعد عملية الفرز ')
+                        ->lang($user->preferred_language)
+                        ->send();
                 } else {
-                    $messageSms = "Your enrolment request have been recived for " . $this->workshop->title . 'we will contact you after the screening process';
+                    $sms->to($user->phone)
+                        ->message("Your enrolment request have been recived for " . $this->workshop->getTranslation('title', 'en') . 'we will contact you after the screening process')
+                        ->lang($user->preferred_language)
+                        ->send();
                 }
 
-                $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
-                $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('User_ID_OTP', 'youthsmsweb') . '&Password=' . env('OTP_Password', 'L!ulid80') . '&MobileNo=' . Auth::user()->phone . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
             } else {
                 $this->closeModal();
                 Notification::make()
-                    ->title('You are alrady booked you seat!')
+                    ->title('You are already booked you seat!')
                     ->danger()
                     ->send();
             }
