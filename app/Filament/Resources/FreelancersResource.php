@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -80,6 +81,8 @@ class FreelancersResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label(__('User')),
+                Tables\Columns\TextColumn::make('user.phone')->label(__('filament::users.phone')),
+                Tables\Columns\TextColumn::make('user.province.name')->label(__('province')),
                 Tables\Columns\TextColumn::make('field.name')->label(__('Field')),
                 Tables\Columns\TextColumn::make('profile_link')->label(__('Profile Link')),
                 Tables\Columns\TextColumn::make('created_at')
@@ -95,6 +98,7 @@ class FreelancersResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export')
             ]);
     }
 
