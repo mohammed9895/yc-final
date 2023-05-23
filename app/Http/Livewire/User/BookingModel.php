@@ -50,16 +50,17 @@ class BookingModel extends ModalComponent
     {
         $bookings_count = Booking::where('workshop_id', '=', $this->workshop->id)->where('status', 2)->where('slot_id', '=', $this->slot_id)->count();
         if ($bookings_count < $this->workshop->capacity) {
-            $if_user_booked = Booking::where('workshop_id', '=', $this->workshop->id)->where('user_id', '=', Auth::id())->count();
+            $if_user_booked = Booking::where('workshop_id', '=', $this->workshop->id)->where('status', 2)->where('user_id', '=', Auth::id())->count();
             if ($if_user_booked == 0) {
                 $slot = Slot::where('id', '=', $this->slot_id)->first();
                 if($this->slot_id == null) {
                     $this->closeModal();
+
                     return Notification::make()
                         ->title('Workshop is fully booked!')
                         ->danger()
                         ->send();
-                        
+
                 }
                 Booking::create([
                     'workshop_id' => $this->workshop->id,
@@ -68,7 +69,9 @@ class BookingModel extends ModalComponent
                     'answers' => $this->answers,
                     'reasone' => $this->reasone
                 ]);
+
                 $this->closeModal();
+
                 Notification::make()
                     ->title('You have booked your seat!')
                     ->success()
