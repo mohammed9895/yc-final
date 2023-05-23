@@ -67,7 +67,7 @@ class BookingModel extends ModalComponent
                 }
                 elseif ($have_booked_same_slot > 0) {
                     Notification::make()
-                        ->title('You have booked your seat!')
+                        ->title('You are already booked you seat!')
                         ->success()
                         ->send();
                 }
