@@ -171,6 +171,8 @@ class GCCCampResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')->searchable()
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('user.phone')->searchable(),
+                Tables\Columns\TextColumn::make('user.email')->searchable(),
                 Tables\Columns\IconColumn::make('has_heart_issues')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('has_respiratory_issues')
