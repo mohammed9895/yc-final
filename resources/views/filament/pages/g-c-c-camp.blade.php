@@ -4,7 +4,7 @@
             <div class="filament-forms-section-header-wrapper flex rtl:space-x-reverse overflow-hidden rounded-t-xl min-h-[56px] px-4 py-2 items-center bg-gray-100 dark:bg-gray-900">
                 <div class="filament-forms-section-header flex-1 space-y-1">
                     <h3 class="font-bold tracking-tight pointer-events-none flex flex-row items-center text-xl">
-                        ظوابط المشاركة
+                        ضوابط المشاركة
                     </h3>
 
                 </div>
