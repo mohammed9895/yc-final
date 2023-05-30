@@ -87,17 +87,18 @@ class EventResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label(__('id')),
-                Tables\Columns\TextColumn::make('user.name')->sortable()->label(__('user')),
-                Tables\Columns\TextColumn::make('hall.name')->sortable()->label(__('hall')),
-                Tables\Columns\TextColumn::make('title')->label(__('title')),
-                Tables\Columns\TextColumn::make('reasone')->label(__('reasone')),
-                Tables\Columns\TextColumn::make('start')->label(__('start')),
-                Tables\Columns\TextColumn::make('end')->label(__('end')),
-                Tables\Columns\BadgeColumn::make('status')->enum([
+                Tables\Columns\TextColumn::make('id')->label(__('id'))->searchable(),
+                Tables\Columns\TextColumn::make('user.name')->sortable()->label(__('user'))->searchable(),
+                Tables\Columns\TextColumn::make('hall.name')->sortable()->label(__('hall'))->searchable(),
+                Tables\Columns\TextColumn::make('title')->label(__('title'))->searchable(),
+                Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
+                Tables\Columns\TextColumn::make('start')->sortable()->label(__('start'))->searchable(),
+                Tables\Columns\TextColumn::make('end')->sortable()->label(__('end'))->searchable(),
+                Tables\Columns\BadgeColumn::make('status')->sortable()->enum([
                     0 => __('Waiting'),
                     1 => __('Approvied'),
                     2 => __('Rejected'),
+                    3 => __('canceled'),
                 ])->label(__('status')),
                 Tables\Columns\TextColumn::make('created_at')->label(__('created_at'))
                     ->dateTime(),
@@ -111,12 +112,25 @@ class EventResource extends Resource
                         0 => 'Waiting',
                         1 => 'Approvied',
                         2 => 'Rejected',
+                        3 => 'Canceled',
                     ]),
                 SelectFilter::make('hall_id')->label(__('hall'))
                     ->multiple()
                     ->options(Hall::all()
                         ->where('status', 1)
                         ->pluck('name', 'id')),
+                Filter::make('start_date')
+                    ->form([
+                        DatePicker::make('start_date')->label(__('start')),
+                    ])
+                    ->label(__('filament::yc.date'))
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['start_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('start', '=', $date),
+                            );
+                    }),
                 Filter::make('date')
                     ->form([
                         DatePicker::make('created_from')->label(__('filament::yc.created_from')),
@@ -134,6 +148,7 @@ class EventResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
