@@ -36,6 +36,7 @@ class CreateEvent extends CreateRecord
             'user_id' => Auth::id(),
             'hall_id' => $data['hall_id'],
             'reasone' => $data['reasone'],
+            'pax' => $data['pax'],
             'start' => $data['start'],
             'end' => $data['end'],
         ]);
