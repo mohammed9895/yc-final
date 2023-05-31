@@ -80,6 +80,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                         ->required()
                         ->label(__('reasone'))
                         ->maxLength(255),
+                    Forms\Components\TextInput::make('pax')->required()->numeric()->label(__('pax')),
                     Forms\Components\DatePicker::make('date')
                         ->withoutSeconds()
                         ->label(__('filament::yc.date'))
@@ -135,6 +136,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                 'user_id' => $orginal['user_id'],
                 'hall_id' => $orginal['hall_id'],
                 'reasone' => $orginal['reasone'],
+                'pax' => $orginal['pax'],
                 'start' => $startDateAndTime,
                 'end' => $endDateAndTime
             ])) {

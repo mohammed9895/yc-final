@@ -56,7 +56,7 @@ class EventResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                    ->label(__('title'))
+                    ->label(__('Title'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('reasone')
@@ -80,6 +80,13 @@ class EventResource extends Resource
                     ->withoutSeconds()
                     ->minutesStep(30)
                     ->required(),
+                Select::make('hall_id')
+                    ->label(__('User'))
+                    ->options(User::all()
+                        ->pluck('name', 'id'))
+                    ->searchable()
+                    ->required(),
+                Forms\Components\TextInput::make('pax')->required()->numeric()->label(__('pax'))
             ]);
     }
 
@@ -92,6 +99,7 @@ class EventResource extends Resource
                 Tables\Columns\TextColumn::make('hall.name')->sortable()->label(__('hall'))->searchable(),
                 Tables\Columns\TextColumn::make('title')->label(__('title'))->searchable(),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
+                Tables\Columns\TextColumn::make('pax')->label(__('pax')),
                 Tables\Columns\TextColumn::make('start')->sortable()->label(__('start'))->searchable(),
                 Tables\Columns\TextColumn::make('end')->sortable()->label(__('end'))->searchable(),
                 Tables\Columns\BadgeColumn::make('status')->sortable()->enum([
@@ -109,10 +117,10 @@ class EventResource extends Resource
                 SelectFilter::make('status')->label(__('status'))
                     ->multiple()
                     ->options([
-                        0 => 'Waiting',
-                        1 => 'Approvied',
-                        2 => 'Rejected',
-                        3 => 'Canceled',
+                        0 => __('Waiting'),
+                        1 => __('Approvied'),
+                        2 => __('Rejected'),
+                        3 => __('canceled'),
                     ]),
                 SelectFilter::make('hall_id')->label(__('hall'))
                     ->multiple()
