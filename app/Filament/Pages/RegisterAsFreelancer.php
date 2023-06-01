@@ -117,7 +117,10 @@ class RegisterAsFreelancer extends Page implements HasForms, HasTable
         if ($orginal['field_id'] == 24) {
             $orginal['others'] = $orginal['others'];
         }
+
         $booking = Freelancers::create($orginal);
+
+        auth()->user()->assignRole('company');
         if ($booking) {
             $sms = new SmsMessage;
             if (auth()->user()->preferred_language == 'ar') {

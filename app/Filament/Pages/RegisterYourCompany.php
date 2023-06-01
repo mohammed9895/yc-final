@@ -164,6 +164,7 @@ class RegisterYourCompany extends Page implements HasForms, HasTable
             $orginal['others'] = $orginal['others'];
         }
         $compnay = Company::create($orginal);
+        auth()->user()->assignRole('company');
         if ($compnay) {
             $sms = new SmsMessage;
             if (auth()->user()->preferred_language == 'ar') {
