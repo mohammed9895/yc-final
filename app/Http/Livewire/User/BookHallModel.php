@@ -119,6 +119,12 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             ->where('end', '>', $startDateAndTime)
             ->count();
 
+        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date'])->startOfDay();
+
+        $user_event_today = Event::whereDate('start', $event_date)
+            ->where('status', '!=', 3)
+            ->count();
+
         if ($events > 0) {
             session()->flash('error', __('This booking timing is not available!'));
             Notification::make()
@@ -128,6 +134,11 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         } elseif (!$this->areSlotsConsecutive()) {
             Notification::make()
                 ->title(__('The selected slots are not consecutive!'))
+                ->warning()
+                ->send();
+        } elseif($user_event_today >= 1) {
+            Notification::make()
+                ->title(__('You Can Book just one booking per day'))
                 ->warning()
                 ->send();
         } else {
