@@ -40,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $users = User::whereHas('company')->get();
+
+        foreach ($users as $user){
+            $user->assignRole('company');
+        }
 
         // $users = User::all();
 

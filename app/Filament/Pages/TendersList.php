@@ -3,15 +3,19 @@
 namespace App\Filament\Pages;
 
 use App\Models\Tender;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
 class TendersList extends Page
 {
+    use HasPageShield;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.tenders-list';
+
 
     public function getTitle(): string
     {

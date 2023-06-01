@@ -3,9 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Freelancers;
 use Carbon\Carbon;
 use App\Models\GCCCamp;
-use App\Models\Freelancers;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
@@ -127,6 +127,11 @@ class User extends Authenticatable implements HasAvatar
     public function freelancers()
     {
         return $this->hasMany(Freelancers::class);
+    }
+
+    public function company()
+    {
+        return $this->hasMany(Company::class);
     }
 
     public function GCCCamps()
