@@ -65,12 +65,12 @@ class MyHallBooking extends Component implements HasTable
 
                     if ($user->preferred_language == 'ar') {
                         $sms->to($user->phone)
-                            ->message('تم الغاء حجزك '.$record->hall->name.'')
+                            ->message('تم الغاء حجزك '.$record->hall->getTranslation('name', 'ar').'')
                             ->lang($user->preferred_language)
                             ->send();
                     } else {
                         $sms->to($user->phone)
-                            ->message('Your reservation for a '.$record->hall->name.' has been canceled')
+                            ->message('Your reservation for a '.$record->hall->getTranslation('name', 'en').' has been canceled')
                             ->lang($user->preferred_language)
                             ->send();
                     }
