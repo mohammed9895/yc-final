@@ -119,11 +119,11 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             ->where('end', '>', $startDateAndTime)
             ->count();
 
-        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date']);
+//        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date'])->startOfDay();
 
-        $user_event_today = Event::whereDate('start', $event_date)
-            ->where('status', '!=', 3)
-            ->count();
+        $user_event_today = Event::whereDate('start', $orginal['date'])
+            ->whereIn('status', [0, 1, 2])
+            ->exists();
 
         if ($events > 0) {
             session()->flash('error', __('This booking timing is not available!'));
@@ -136,11 +136,9 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                 ->title(__('The selected slots are not consecutive!'))
                 ->warning()
                 ->send();
-        } elseif($user_event_today >= 1) {
-            Notification::make()
-                ->title(__('You Can Book just one booking per day'))
-                ->warning()
-                ->send();
+        } elseif($user_event_today) {
+            session()->flash('error', __('You ban book just one booking per day'));
+            $this->slots = [];
         } else {
             if (Event::create([
                 'title' => $orginal['title'],
@@ -193,6 +191,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             // Check if the difference between two slots is not equal to 30 (or your slot interval)
             if ($difference != 30) {
                 session()->flash('error', __('The selected slots are not consecutive!'));
+                $this->slots = [];
                 return false;
             }
         }
