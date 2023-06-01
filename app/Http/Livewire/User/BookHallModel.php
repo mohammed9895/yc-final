@@ -119,7 +119,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             ->where('end', '>', $startDateAndTime)
             ->count();
 
-        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date'])->startOfDay();
+        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date']);
 
         $user_event_today = Event::whereDate('start', $event_date)
             ->where('status', '!=', 3)
