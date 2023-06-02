@@ -117,6 +117,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         $events = Event::where('hall_id', $this->hall_id)
             ->where('start', '<', $endDateAndTime)
             ->where('end', '>', $startDateAndTime)
+            ->whereIn('status', [0, 1])
             ->count();
 
 //        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date'])->startOfDay();
