@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Config;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Spatie\Ray\Ray;
 
 class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
 {
@@ -86,7 +87,10 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                         ->label(__('filament::yc.date'))
                         ->minDate(now()->today())
                         ->reactive()
-                        ->afterStateUpdated(fn (callable $set, $state) => $set('todayDate', $state))
+                        ->afterStateUpdated(function (callable $set, $state) {
+                            $this->slots = [];
+                            $set('todayDate', $state);
+                        })
                         ->weekStartsOnSunday()
                         ->required(),
                 ])
@@ -100,79 +104,83 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         $orginal['user_id'] = $this->user_id;
         $orginal['hall_id'] = $this->hall_id;
 
-        $startTime = min($this->slots);
-        $endTime = max($this->slots);
 
-        $startDateAndTime = Carbon::parse($orginal['date'] . $startTime);
-        $endDateAndTime = Carbon::parse($orginal['date'] . $endTime);
+        if($this->slots != []) {
+            $startTime = min($this->slots);
+            $endTime = max($this->slots);
+            $startDateAndTime = Carbon::parse($orginal['date'] . $startTime);
+            $endDateAndTime = Carbon::parse($orginal['date'] . $endTime);
 
-        $orginal['start'] = $startDateAndTime;
+            $orginal['start'] = $startDateAndTime;
 
-        if ($endTime != '10:00 PM') {
-            $orginal['end'] = $endDateAndTime->addMinutes(30);
-        } else {
-            $orginal['end'] = $endDateAndTime;
-        }
+            if ($endTime != '10:00 PM') {
+                $orginal['end'] = $endDateAndTime->addMinutes(30);
+            } else {
+                $orginal['end'] = $endDateAndTime;
+            }
 
-        $events = Event::where('hall_id', $this->hall_id)
-            ->where('start', '<', $endDateAndTime)
-            ->where('end', '>', $startDateAndTime)
-            ->whereIn('status', [0, 1])
-            ->count();
+            $events = Event::where('hall_id', $this->hall_id)
+                ->where('start', '<', $endDateAndTime)
+                ->where('end', '>', $startDateAndTime)
+                ->whereIn('status', [0, 1])
+                ->count();
+            $user_events_today = Event::whereDate('start', $orginal['date'])
+                ->whereIn('status', [0, 1])
+                ->where('user_id', auth()->id())
+                ->exists();
 
-//        $event_date = Carbon::createFromFormat('Y-m-d', $orginal['date'])->startOfDay();
-
-        $user_event_today = Event::whereDate('start', $orginal['date'])
-            ->whereIn('status', [0, 1, 2])
-            ->exists();
-
-        if ($events > 0) {
-            session()->flash('error', __('This booking timing is not available!'));
-            Notification::make()
-                ->title(__('This booking timing is not available!'))
-                ->warning()
-                ->send();
-        } elseif (!$this->areSlotsConsecutive()) {
-            Notification::make()
-                ->title(__('The selected slots are not consecutive!'))
-                ->warning()
-                ->send();
-        }  else {
-            if (Event::create([
-                'title' => $orginal['title'],
-                'user_id' => $orginal['user_id'],
-                'hall_id' => $orginal['hall_id'],
-                'reasone' => $orginal['reasone'],
-                'pax' => $orginal['pax'],
-                'start' => $startDateAndTime,
-                'end' => $endDateAndTime
-            ])) {
-                $this->closeModal();
+            if ($events > 0) {
+                session()->flash('error', __('This booking timing is not available!'));
                 Notification::make()
-                    ->title(__('You have booked hall successfuly!'))
-                    ->success()
-                    ->persistent()
-                    // ->actions([
-                    //     Action::make('add to Calender')
-                    //         ->button()
-                    //         ->url($link->ics())
-                    // ])
+                    ->title(__('This booking timing is not available!'))
+                    ->warning()
                     ->send();
+            } elseif (!$this->areSlotsConsecutive()) {
+                Notification::make()
+                    ->title(__('The selected slots are not consecutive!'))
+                    ->warning()
+                    ->send();
+            } elseif ($user_events_today) {
+                session()->flash('error', __('You can\'t book more than one hall per day!'));
+                Notification::make()
+                    ->title(__('You can\'t book more than one hall per day!'))
+                    ->warning()
+                    ->send();
+            } else {
+                if (Event::create([
+                    'title' => $orginal['title'],
+                    'user_id' => $orginal['user_id'],
+                    'hall_id' => $orginal['hall_id'],
+                    'reasone' => $orginal['reasone'],
+                    'pax' => $orginal['pax'],
+                    'start' => $startDateAndTime,
+                    'end' => $endDateAndTime
+                ])) {
+                    $this->closeModal();
+                    Notification::make()
+                        ->title(__('You have booked the hall successfully!'))
+                        ->success()
+                        ->persistent()
+                        ->send();
 
-                $sms = new SmsMessage;
-                $user = auth()->user();
-                if ($user->preferred_language == 'ar') {
-                    $sms->to($user->phone)
-                        ->message('تم استلام طلبك حجزك ل ' . $this->hall->name . ' سوف يتم تأكيد حجزك قريبًا')
-                        ->lang($user->preferred_language)
-                        ->send();
-                } else {
-                    $sms->to($user->phone)
-                        ->message("Your reservation has been received for " . $this->hall->name . ", It will be confirmed soon.")
-                        ->lang($user->preferred_language)
-                        ->send();
+                    $sms = new SmsMessage;
+                    $user = auth()->user();
+                    if ($user->preferred_language == 'ar') {
+                        $sms->to($user->phone)
+                            ->message('تم استلام طلبك حجزك ل ' . $this->hall->name . ' سوف يتم تأكيد حجزك قريبًا')
+                            ->lang($user->preferred_language)
+                            ->send();
+                    } else {
+                        $sms->to($user->phone)
+                            ->message("Your reservation has been received for " . $this->hall->name . ", It will be confirmed soon.")
+                            ->lang($user->preferred_language)
+                            ->send();
+                    }
                 }
             }
+        }
+        else {
+            session()->flash('error', __('You have to choose timing!'));
         }
     }
 
@@ -219,7 +227,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
 
         $events = Event::where('hall_id', $this->hall_id)
             ->whereDate('start', '=', $this->todayDate)
-            ->where('status', 1)
+            ->whereIn('status', [0, 1])
             ->get();
 
         $reservedTimings = [];
