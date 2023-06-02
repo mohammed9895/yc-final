@@ -136,10 +136,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                 ->title(__('The selected slots are not consecutive!'))
                 ->warning()
                 ->send();
-        } elseif($user_event_today) {
-            session()->flash('error', __('You ban book just one booking per day'));
-            $this->slots = [];
-        } else {
+        }  else {
             if (Event::create([
                 'title' => $orginal['title'],
                 'user_id' => $orginal['user_id'],
