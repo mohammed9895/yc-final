@@ -104,7 +104,6 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         $orginal['user_id'] = $this->user_id;
         $orginal['hall_id'] = $this->hall_id;
 
-
         if($this->slots != []) {
             $startTime = min($this->slots);
             $endTime = max($this->slots);
