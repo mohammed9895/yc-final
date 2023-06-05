@@ -36,6 +36,11 @@ class EventResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    protected static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', 0)->count();
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return   __('halls');
