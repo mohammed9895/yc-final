@@ -26,6 +26,8 @@ class GCCCampPage extends Page implements HasForms, HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string $view = 'filament.pages.g-c-c-camp';
 
     public function getTitle(): string
