@@ -92,22 +92,16 @@ class MyBookings extends Component implements HasTable
 
                     $slot_days_count = $slot_start_date->diffInDays($slot_end_date);
 
-                    $present_attendees = Attendees::where('slot_id', $this->slot_id)->where('user_id', Auth::id())->where('attendance', 1)->count();
-                    if ($slot_days_count === 0) {
-                        $slot_days_count = 1;
-                    }
-                    if ($slot_days_count === $present_attendees) {
-                        $evaluations = Evaluate::where('user_id', Auth::id(),)->where('workshop_id', $record->workshop_id)->get();
-                        if (count($evaluations) === 0) {
-                            $this->emit('openModal', 'user.evaluate-model', ['booking' => $record]);
-                        } else {
-                            $this->emit('downloadCertificate');
-                        }
+//                    $present_attendees = Attendees::where('slot_id', $this->slot_id)->where('user_id', Auth::id())->where('attendance', 1)->count();
+//                    if ($slot_days_count === 0) {
+//                        $slot_days_count = 1;
+//                    }
+
+                    $evaluations = Evaluate::where('user_id', Auth::id(),)->where('workshop_id', $record->workshop_id)->get();
+                    if (count($evaluations) === 0) {
+                        $this->emit('openModal', 'user.evaluate-model', ['booking' => $record]);
                     } else {
-                        Notification::make()
-                            ->title('You are not eligible for certificate')
-                            ->danger()
-                            ->send();
+                        $this->emit('downloadCertificate');
                     }
                 } else {
                     Notification::make()
@@ -160,11 +154,11 @@ class MyBookings extends Component implements HasTable
         $slot_end_date = Carbon::parse($slots_dates->end_date);
         $slot_days_count = $slot_start_date->diffInDays($slot_end_date);
 
-        $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance', 1)->count();
-        if ($slot_days_count === 0) {
-            $slot_days_count = 1;
-        }
-        if ($slot_days_count === $present_attendees) {
+//        $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance', 1)->count();
+//        if ($slot_days_count === 0) {
+//            $slot_days_count = 1;
+//        }
+//        if ($slot_days_count === $present_attendees) {
 
             $workshop_info = Workshop::where('id', $workshop)->first();
 
@@ -188,12 +182,7 @@ class MyBookings extends Component implements HasTable
                 ->success()
                 ->send();
             return Response::download($outputFile, $filename, $headers);
-        } else {
-            Notification::make()
-                ->title('You are not eligible for certificate')
-                ->danger()
-                ->send();
-        }
+
     }
 
 
