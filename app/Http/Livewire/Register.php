@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\User;
 use App\Models\State;
 use App\Models\Country;
+use Filament\Forms\Components\Checkbox;
 use Livewire\Component;
 use App\Models\Province;
 use App\Models\Disability;
@@ -146,6 +147,11 @@ class Register extends Component implements HasForms
                                 return $province->state->pluck('name', 'id');
                             })
                             ->searchable(),
+                        Select::make('permanent_residence_state_id')
+                            ->label(__('permanent_residence_state'))
+                            ->required()
+                            ->options(State::all()->pluck('name', 'id'))
+                            ->searchable(),
                     ]),
                 Wizard\Step::make(__('Step 3'))
                     ->schema([
@@ -168,6 +174,7 @@ class Register extends Component implements HasForms
                                     'ar' => 'Arabic'
                                 ]
                             ),
+                        Checkbox::make('agreed_on_terms')->label(new HtmlString(''.__('I agree with the').' <a href="/termsandconditions" class="text-primary-600">'.__('terms and conditions').'</a>'))->inline()->required()
                     ])
             ])
                 ->columns([
@@ -176,7 +183,9 @@ class Register extends Component implements HasForms
                 ->columnSpan([
                     'sm' => 1,
                 ])
-                ->submitAction(new HtmlString(html: '<button type="submit" class="filament-button filament-button-size-sm inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset dark:focus:ring-offset-0 min-h-[2rem] px-3 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Register</button>'))
+                ->submitAction(new HtmlString(html: '
+                        <button type="submit" class="filament-button filament-button-size-sm inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset dark:focus:ring-offset-0 min-h-[2rem] px-3 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Register
+                        </button>'))
 
         ];
     }
@@ -185,32 +194,38 @@ class Register extends Component implements HasForms
     {
         $phone_verified_code =  random_int(10000, 99999);
         $orginal = $this->form->getState();
-        $orginal['phone_verified_code'] = $phone_verified_code;
 
-        // Combine first, middle, and family names to create the full name
-        $fullname = trim("{$orginal['first_name']} {$orginal['middle_name']} {$orginal['family_name']}");
+        if ($orginal['agreed_on_terms']) {
+            $orginal['phone_verified_code'] = $phone_verified_code;
 
-        // Remove first, middle, and family name attributes
-        unset($orginal['first_name'], $orginal['middle_name'], $orginal['family_name']);
+            // Combine first, middle, and family names to create the full name
+            $fullname = trim("{$orginal['first_name']} {$orginal['middle_name']} {$orginal['family_name']}");
 
-        // Set the full name attribute
-        $orginal['name'] = $fullname;
+            // Remove first, middle, and family name attributes
+            unset($orginal['first_name'], $orginal['middle_name'], $orginal['family_name']);
 
-        $messageSms = '';
+            // Set the full name attribute
+            $orginal['name'] = $fullname;
 
-        if (Config::get('app.locale') == 'ar') {
-            $messageSms = "رمز التأكيد الخاص بك هو: " . $phone_verified_code;
-        } else {
-            $messageSms = "Your Verifcation code is " . $phone_verified_code;
+            $messageSms = '';
+
+            if (Config::get('app.locale') == 'ar') {
+                $messageSms = "رمز التأكيد الخاص بك هو: " . $phone_verified_code;
+            } else {
+                $messageSms = "Your Verifcation code is " . $phone_verified_code;
+            }
+
+            $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
+            $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('User_ID_OTP', 'youthsmsweb') . '&Password=' . env('OTP_Password', 'L!ulid80') . '&MobileNo=' . $orginal['phone'] . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
+
+            $user = User::create($orginal);
+            $user->assignRole('filament_user');
+            Filament::auth()->login(user: $user, remember: true);
+            return redirect()->intended(Filament::getUrl('filament.pages.dashboard'));
         }
-
-        $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
-        $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('User_ID_OTP', 'youthsmsweb') . '&Password=' . env('OTP_Password', 'L!ulid80') . '&MobileNo=' . $orginal['phone'] . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
-
-        $user = User::create($orginal);
-        $user->assignRole('filament_user');
-        Filament::auth()->login(user: $user, remember: true);
-        return redirect()->intended(Filament::getUrl('filament.pages.dashboard'));
+        else {
+            return redirect()->back();
+        }
     }
 
     public function render(): View
