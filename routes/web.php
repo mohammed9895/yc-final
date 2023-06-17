@@ -37,3 +37,7 @@ Route::get('/reset-passwords/{token}', ResetPassword::class)->middleware(['guest
 Route::get('/test', function () {
     return "test";
 });
+
+Route::get('/termsandconditions', function() {
+    return view('frontend.terms');
+});

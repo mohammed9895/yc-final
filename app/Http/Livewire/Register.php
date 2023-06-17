@@ -174,7 +174,7 @@ class Register extends Component implements HasForms
                                     'ar' => 'Arabic'
                                 ]
                             ),
-                        Checkbox::make('agreed_on_terms')->label(new HtmlString(''.__('I agree with the').' <a href="/termsandconditions" class="text-primary-600">'.__('terms and conditions').'</a>'))->inline()->required()
+                        Checkbox::make('agreed_on_terms')->label(new HtmlString(''.__('I agree with the').' <a href="/termsandconditions" target="_blank" class="text-primary-600">'.__('terms and conditions').'</a>'))->inline()->required()
                     ])
             ])
                 ->columns([
