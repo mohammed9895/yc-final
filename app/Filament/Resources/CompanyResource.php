@@ -106,14 +106,14 @@ class CompanyResource extends Resource
                     ->label(__('User'))
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
-                Tables\Columns\TextColumn::make('name')->label(__('Name')),
-                Tables\Columns\TextColumn::make('cr_number')->label(__('cr_number')),
+                Tables\Columns\TextColumn::make('name')->label(__('Name'))->searchable(),
+                Tables\Columns\TextColumn::make('cr_number')->label(__('cr_number'))->searchable(),
                 Tables\Columns\TextColumn::make('about')->label(__('about')),
-                Tables\Columns\TextColumn::make('filed')->label(__('filed')),
-                Tables\Columns\TextColumn::make('owner_fullname')->label(__('owner_fullname')),
-                Tables\Columns\TextColumn::make('owner_phone')->label(__('owner_phone')),
-                Tables\Columns\TextColumn::make('owner_email')->label(__('owner_email')),
-                Tables\Columns\TextColumn::make('owner_civil_id')->label(__('owner_civil_id')),
+                Tables\Columns\TextColumn::make('filed')->label(__('filed'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('owner_fullname')->label(__('owner_fullname'))->searchable(),
+                Tables\Columns\TextColumn::make('owner_phone')->label(__('owner_phone'))->searchable(),
+                Tables\Columns\TextColumn::make('owner_email')->label(__('owner_email'))->searchable(),
+                Tables\Columns\TextColumn::make('owner_civil_id')->label(__('owner_civil_id'))->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label(__('created_at'))
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')->label(__('updated_at'))

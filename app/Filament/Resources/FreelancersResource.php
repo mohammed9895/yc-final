@@ -80,14 +80,14 @@ class FreelancersResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')->label(__('User')),
-                Tables\Columns\TextColumn::make('user.phone')->label(__('filament::users.phone')),
-                Tables\Columns\TextColumn::make('user.province.name')->label(__('province')),
-                Tables\Columns\TextColumn::make('field.name')->label(__('Field')),
+                Tables\Columns\TextColumn::make('user.name')->label(__('User'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('user.phone')->label(__('filament::users.phone'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('user.province.name')->label(__('province'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('field.name')->label(__('Field'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('profile_link')->label(__('Profile Link')),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')->sortable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('updated_at')->sortable()
                     ->dateTime(),
             ])
             ->filters([
