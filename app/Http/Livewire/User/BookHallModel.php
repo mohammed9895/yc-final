@@ -134,7 +134,7 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                     ->title(__('This booking timing is not available!'))
                     ->warning()
                     ->send();
-            } elseif (!$this->areSlotsConsecutive()) {
+            } elseif ($this->areSlotsConsecutive() == false) {
                 Notification::make()
                     ->title(__('The selected slots are not consecutive!'))
                     ->warning()
