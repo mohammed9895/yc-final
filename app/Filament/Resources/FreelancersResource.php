@@ -93,7 +93,7 @@ class FreelancersResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                SelectFilter::make('province_id')
+                SelectFilter::make('field_id')
                     ->multiple()
                     ->label(__('Field'))
                     ->options(Field::where('type', 'freelancer')
