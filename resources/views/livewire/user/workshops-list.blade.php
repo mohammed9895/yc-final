@@ -1,4 +1,12 @@
 <div>
+    <div>
+        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Select the Governorate')  }}</label>
+        <select id="countries" wire:change="change_place" wire:model="place" class="bg-gray-50 mb-5 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            @foreach($places as $place)
+                <option value="{{ $place->id }}">{{ $place->name  }}</option>
+            @endforeach
+        </select>
+    </div>
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
         @foreach ($workshops as $workshop)
             <div
@@ -11,7 +19,7 @@
                         @foreach ($workshop->conditions as $condition)
                         <span
                             class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-purple-900 dark:text-purple-300">{{ $condition }}</span>
-                    @endforeach 
+                    @endforeach
                         <span
                             class="bg-purple-100 absolute top-2 left-1  text-purple-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-purple-900 dark:text-purple-300">{{ $workshop->place->name }}</span>
                     </div>
