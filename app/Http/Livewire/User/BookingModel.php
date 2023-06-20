@@ -73,6 +73,7 @@ class BookingModel extends ModalComponent
                             ->danger()
                             ->send();
                     } else {
+
                         Booking::create([
                             'workshop_id' => $this->workshop->id,
                             'slot_id' => $this->slot_id,

@@ -115,6 +115,14 @@
                                 <input id="link-checkbox" type="checkbox" value="" wire:model="accept" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
                                 <label for="link-checkbox" class="ml-2 rtl:mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ __('I agree with the')  }} <a href="/termsandconditions" target="_blank" class="text-primary-600 dark:text-primary-500 hover:underline">{{ __('terms and conditions') }}</a>.</label>
                             </div>
+                            <div class="flex items-center mt-4">
+                                <input id="link-checkbox" type="checkbox" value="" wire:model="accept" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+                                <label for="link-checkbox" class="ml-2 rtl:mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ __('I agree to the use of my photos in the coverage media for the youth center.')  }}</label>
+                            </div>
+                            <div class="flex items-center mt-4">
+                                <input id="link-checkbox" type="checkbox" value="" wire:model="accept" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+                                <label for="link-checkbox" class="ml-2 rtl:mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ __('I agree that I am committed to attending the entire workshop')  }}</label>
+                            </div>
                     </div>
                 </div>
             </div>
