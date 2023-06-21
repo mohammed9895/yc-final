@@ -38,7 +38,6 @@ class BookingModel extends ModalComponent
         $this->workshop = $workshop;
         $this->slots = Slot::where('start_date', '>=', date('Y-m-d'))->where('workshop_id', '=', $this->workshop->id)->with('bookings')->get();
         $this->questions = Workshop::all()->where('id', $this->workshop->id);
-        ray($this->slots);
     }
     public function render()
     {
