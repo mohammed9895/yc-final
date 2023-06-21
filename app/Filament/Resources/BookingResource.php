@@ -13,6 +13,7 @@ use Filament\Resources\Table;
 use Filament\Resources\Resource;
 use App\Notifications\SmsMessage;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
 use Filament\Tables\Actions\BulkAction;
@@ -145,14 +146,45 @@ class BookingResource extends Resource
                         2 => __('Approvied'),
                         3 => __('canceled')
                     ]),
-                SelectFilter::make('workshop_id')
-                    ->multiple()
-                    ->label(__('Workshop'))
-                    ->options(Workshop::all()->pluck('title', 'id')),
-                SelectFilter::make('slot_id')
-                    ->multiple()
-                    ->label(__('Slot'))
-                    ->options(Slot::all()->pluck('name', 'id')),
+//                SelectFilter::make('workshop_id')
+//                    ->multiple()
+//                    ->label(__('Workshop'))
+//                    ->options(Workshop::all()->pluck('title', 'id')),
+//                SelectFilter::make('slot_id')
+//                    ->multiple()
+//                    ->label(__('Slot'))
+//                    ->options(Slot::all()->pluck('name', 'id')),
+
+                Filter::make('workshop_id')
+                    ->form([
+                        Select::make('workshop_id')
+                            ->label(__('Workshop'))
+                            ->options(Workshop::all()->pluck('title', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set) => $set('slot_id', null)),
+                        Select::make('slot_id')
+                            ->label(__('slot'))
+                            ->options(function (callable $get) {
+                                $workshop = Workshop::find($get('workshop_id'));
+                                if (!$workshop) {
+                                    return Slot::all()->pluck('name', 'id');
+                                }
+                                return $workshop->slots->pluck('name', 'id');
+                            })
+                            ->searchable(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['workshop_id'],
+                                fn (Builder $query, $date): Builder => $query->where('workshop_id', '=', $date),
+                            )
+                            ->when(
+                                $data['slot_id'],
+                                fn (Builder $query, $date): Builder => $query->where('slot_id', '=', $date),
+                            );
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
