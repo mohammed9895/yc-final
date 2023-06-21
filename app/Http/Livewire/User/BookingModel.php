@@ -54,11 +54,13 @@ class BookingModel extends ModalComponent
 
     public function book(Request $request)
     {
+        ray($this->answers);
         $this->validate([
-            'answers.open_question' => ['required', 'max:255'],
-            'answers.upload_question' => ['required'],
-            'answers.options_question' => ['required'],
+            'answers.open_question' => ['sometimes','required', 'max:255'],
+            'answers.upload_question' => ['sometimes', 'required'],
+            'answers.options_question' => ['sometimes', 'required'],
         ]);
+        ray($this->answers);
         if ($this->accept) {
 
             $bookings_count = Booking::where('workshop_id', '=', $this->workshop->id)->where('status', 2)->where('slot_id', '=', $this->slot_id)->count();
@@ -83,10 +85,10 @@ class BookingModel extends ModalComponent
                             ->danger()
                             ->send();
                     } else {
+                        ray($this->answers);
                         $answers_finals = [];
                         foreach ($this->answers as $questionType => $questionData){
                            if ($questionType == 'upload_question'){
-
                                foreach ($questionData as $question => $answer) {
                                    $extension = $answer->getClientOriginalExtension();
                                    $uniqueId = Str::random(10);
@@ -100,6 +102,7 @@ class BookingModel extends ModalComponent
                                $answers_finals[] = $questionData;
                            }
                         }
+                        ray($answers_finals);
                         Booking::create([
                             'workshop_id' => $this->workshop->id,
                             'slot_id' => $this->slot_id,
