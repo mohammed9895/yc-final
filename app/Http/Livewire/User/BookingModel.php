@@ -91,7 +91,7 @@ class BookingModel extends ModalComponent
                                    $uniqueId = Str::random(10);
                                    $timestamp = now()->format('YmdHis');
                                    $finalFileName = $timestamp . '_' . $uniqueId . '.' . $extension;
-                                   $answer->storeAs('public/answers/'.Str::kebab($this->workshop->getTranslation('title', 'en')), $finalFileName);
+                                   $answer->storeAs('answers/'.Str::kebab($this->workshop->getTranslation('title', 'en')), $finalFileName);
                                    $answers_finals[] = [$question => "answers/" . Str::kebab($this->workshop->getTranslation('title', 'en')) . "/" .$finalFileName];
                                }
                            }
