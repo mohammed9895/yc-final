@@ -25,6 +25,11 @@ class WorkshopsList extends Component
     }
 
     public function change_place(){
-        $this->workshops = Workshop::all()->where('place_id', $this->place)->where('status', '=', 1);
+        if ($this->place == 'all'){
+            $this->workshops = Workshop::all()->where('status', '=', 1);
+        }
+        else {
+            $this->workshops = Workshop::all()->where('place_id', $this->place)->where('status', '=', 1);
+        }
     }
 }
