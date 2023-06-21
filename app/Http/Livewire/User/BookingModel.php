@@ -6,6 +6,7 @@ use App\Notifications\SmsMessage;
 use Carbon\Carbon;
 use App\Models\Slot;
 use App\Models\Booking;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ use Filament\Notifications\Notification;
 class BookingModel extends ModalComponent
 {
     use WithFileUploads;
+
     public $workshop;
     public $slots;
     public $slot_id;
@@ -48,9 +50,17 @@ class BookingModel extends ModalComponent
         return 'xl';
     }
 
+
+
     public function book(Request $request)
     {
+        $this->validate([
+            'answers.open_question' => ['required', 'max:255'],
+            'answers.upload_question' => ['required'],
+            'answers.options_question' => ['required'],
+        ]);
         if ($this->accept) {
+
             $bookings_count = Booking::where('workshop_id', '=', $this->workshop->id)->where('status', 2)->where('slot_id', '=', $this->slot_id)->count();
 
             if ($bookings_count < $this->workshop->capacity) {
@@ -73,12 +83,28 @@ class BookingModel extends ModalComponent
                             ->danger()
                             ->send();
                     } else {
+                        $answers_finals = [];
+                        foreach ($this->answers as $questionType => $questionData){
+                           if ($questionType == 'upload_question'){
 
+                               foreach ($questionData as $question => $answer) {
+                                   $extension = $answer->getClientOriginalExtension();
+                                   $uniqueId = Str::random(10);
+                                   $timestamp = now()->format('YmdHis');
+                                   $finalFileName = $timestamp . '_' . $uniqueId . '.' . $extension;
+                                   $answer->storeAs('public/answers/'.Str::kebab($this->workshop->getTranslation('title', 'en')), $finalFileName);
+                                   $answers_finals[] = [$question => "answers/" . Str::kebab($this->workshop->getTranslation('title', 'en')) . "/" .$finalFileName];
+                               }
+                           }
+                           else {
+                               $answers_finals[] = $questionData;
+                           }
+                        }
                         Booking::create([
                             'workshop_id' => $this->workshop->id,
                             'slot_id' => $this->slot_id,
                             'user_id' => Auth::id(),
-                            'answers' => $this->answers,
+                            'answers' => $answers_finals,
                             'reasone' => $this->reasone
                         ]);
 

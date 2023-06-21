@@ -34,9 +34,12 @@ use Filament\Forms\Components\Select;
 class BookingResource extends Resource
 {
     // use HasPageShield;
+    public $answer;
     protected static ?string $model = Booking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
+
+    protected $listeners = ['downloadAnswerFile' => 'download'];
 
     protected static function getNavigationBadge(): ?string
     {
@@ -118,7 +121,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('user.email')
                     ->label(__('filament::users.email'))
                     ->searchable(),
-                TextColumn::make('answers'),
+//                TextColumn::make('answers'),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
                 // Tables\Columns\TextColumn::make('answers')->label(__('answers'))->searchable(),
                 Tables\Columns\TextColumn::make('rejection_message')->label(__('rejection_message')),
@@ -253,6 +256,13 @@ class BookingResource extends Resource
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->hidden(fn (Booking $record) => $record->status === 3),
+                Action::make('show_answers')
+                    ->action(function(Booking $record, array $data) {
+
+                    })
+                    ->color('warning')
+                    ->modalContent(fn ($record) => view('filament.custom.answers', ['record'=> $record]))
+                    ->hidden(fn (Booking $record) => $record->answers === [])
             ])
             ->bulkActions([
                 BulkAction::make('approve')
@@ -350,5 +360,9 @@ class BookingResource extends Resource
             'create' => Pages\CreateBooking::route('/create'),
             'edit' => Pages\EditBooking::route('/{record}/edit'),
         ];
+    }
+
+    public function download() {
+       ray('test');
     }
 }

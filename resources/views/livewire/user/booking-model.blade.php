@@ -61,15 +61,16 @@
                                         <div class="mb-6">
                                             <label
                                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ $value }}</label>
-                                            <input type="text" wire:model="answers.{{ $i }}"
+                                            <input type="text" wire:model="answers.{{$workshop->questions[$i]['type']}}.{{ $value }}"
                                                 class="block w-full transition duration-75 rounded-lg shadow-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-inset focus:ring-primary-500 disabled:opacity-70 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 border-gray-300 dark:border-gray-600"
-                                                required>
+                                                >
+                                            @error('answers.open_question') <span class="text-red-600">{{ $message }}</span> @enderror
                                         </div>
                                     @endif
                                     @if ($workshop->questions[$i]['type'] == 'checkbox_question')
-                                        <div class="flex items-center mb-6">
+                                        <div class="flex items-center mb-6 mt-6">
                                             <input id="default-checkbox" type="checkbox"
-                                                wire:model="answers.{{ $i }}" checked="false"
+                                                wire:model="answers.{{$workshop->questions[$i]['type']}}.{{ $value }}" checked="false"
                                                 class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                             <label for="default-checkbox"
                                                 class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $value }}</label>
@@ -81,13 +82,14 @@
                                             for="file_input">{{ $value }}</label>
                                         <input
                                             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                            id="file_input" type="file" wire:model="answers.{{ $i }}">
+                                            id="file_input" type="file" wire:model="answers.{{ $workshop->questions[$i]['type'] }}.{{ $value }}" >
+                                            @error('answers.upload_question') <span class="text-red-600">{{ $message }}</span> @enderror
                                     @endif
                                 @endforeach
                                 @if ($workshop->questions[$i]['type'] === 'options_question')
                                     <label for="countries"
                                         class="block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-white">{{ $workshop->questions[$i]['data']['options_question'] }}</label>
-                                    <select id="countries" wire:model="answers.{{ $i }}"
+                                    <select id="countries" wire:model="answers.{{ $workshop->questions[$i]['type'] }}.{{ $workshop->questions[$i]['data']['options_question'] }}"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                         @php
                                             $options = explode(',', $workshop->questions[$i]['data']['options_list']);
@@ -97,6 +99,7 @@
                                             <option value="{{ $option }}">{{ $option }}</option>
                                         @endforeach
                                     </select>
+                                        @error('answers.options_question') <span class="text-red-600">{{ $message }}</span> @enderror
                                 @endif
                             @endfor
                         @endif
