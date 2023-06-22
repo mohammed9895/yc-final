@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Place;
 use Filament\Forms;
 use App\Models\Slot;
 use App\Models\User;
@@ -157,6 +158,10 @@ class BookingResource extends Resource
 
                 Filter::make('workshop_id')
                     ->form([
+                        Select::make('place_id')
+                            ->label(__('Place'))
+                            ->options(Place::all()->pluck('name', 'id'))
+                            ->searchable(),
                         Select::make('workshop_id')
                             ->label(__('Workshop'))
                             ->options(Workshop::all()->pluck('title', 'id'))
@@ -176,6 +181,14 @@ class BookingResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
+                            ->when(
+                                $data['place_id'],
+                                function (Builder $query, $placeId) {
+                                    return $query->whereHas('workshop', function ($query) use ($placeId) {
+                                        $query->where('place_id', $placeId);
+                                    });
+                                }
+                            )
                             ->when(
                                 $data['workshop_id'],
                                 fn (Builder $query, $date): Builder => $query->where('workshop_id', '=', $date),
