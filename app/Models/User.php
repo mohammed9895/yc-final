@@ -128,6 +128,11 @@ class User extends Authenticatable implements HasAvatar
     {
         return $this->hasMany(ThreeD::class);
     }
+    public function trainingApplication()
+    {
+        return $this->hasMany(TrainingApplication::class);
+    }
+
 
     public function freelancers()
     {

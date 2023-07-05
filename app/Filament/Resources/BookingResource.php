@@ -135,7 +135,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('user.email')
                     ->label(__('filament::users.email'))
                     ->searchable(),
-                TextColumn::make('user.birth_date')->date(fn (Booking $record): string => $record->user->birth_date),
+//                TextColumn::make('user.birth_date')->date(fn (Booking $record): string => $record->user->birth_date),
 //                TextColumn::make('answers'),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
                 // Tables\Columns\TextColumn::make('answers')->label(__('answers'))->searchable(),

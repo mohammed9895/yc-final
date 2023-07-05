@@ -22,4 +22,9 @@ class EmployeeType extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    public function trainingApplication()
+    {
+        return $this->hasOne(TrainingApplication::class);
+    }
 }
