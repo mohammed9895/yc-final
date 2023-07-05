@@ -20,6 +20,11 @@ class User extends Authenticatable implements HasAvatar
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+//    public function canAccessFilament(): bool
+//    {
+//        return str_ends_with($this->email, '@yc.om');
+//    }
+
 
     /**
      * The attributes that are mass assignable.

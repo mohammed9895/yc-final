@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Models\Place;
+use App\Models\State;
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\Slot;
 use App\Models\User;
@@ -51,6 +53,16 @@ class BookingResource extends Resource
     protected static function getNavigationGroup(): ?string
     {
         return   __('workshops');
+    }
+
+    protected function getDefaultTableSortColumn(): ?string
+    {
+        return 'created_at';
+    }
+
+    protected function getDefaultTableSortDirection(): ?string
+    {
+        return 'desc';
     }
 
     public static function getModelLabel(): string
@@ -123,6 +135,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('user.email')
                     ->label(__('filament::users.email'))
                     ->searchable(),
+                TextColumn::make('user.birth_date')->date(fn (Booking $record): string => $record->user->birth_date),
 //                TextColumn::make('answers'),
                 Tables\Columns\TextColumn::make('reasone')->label(__('reasone'))->searchable(),
                 // Tables\Columns\TextColumn::make('answers')->label(__('answers'))->searchable(),
@@ -155,7 +168,7 @@ class BookingResource extends Resource
 //                    ->multiple()
 //                    ->label(__('Slot'))
 //                    ->options(Slot::all()->pluck('name', 'id')),
-
+                SelectFilter::make('user')->relationship('user', 'state')->label(__('states'))->options(State::all()->pluck('name', 'id')),
                 Filter::make('workshop_id')
                     ->form([
                         Select::make('place_id')
