@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use ZipArchive;
 use Filament\Forms;
 use Filament\Tables;
@@ -61,7 +62,8 @@ class CompanyResource extends Resource
                                 ->maxLength(255),
                             Forms\Components\Select::make('filed')
                                 ->label(__('filed'))
-                                ->options(Field::all()->pluck('name', 'id'))
+                                ->options(Field::where('type', 'freelancer')
+                                    ->pluck('name', 'id'))
                                 ->required(),
                         ]),
                     Wizard\Step::make(__('companyـowner'))
@@ -109,7 +111,7 @@ class CompanyResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label(__('Name'))->searchable(),
                 Tables\Columns\TextColumn::make('cr_number')->label(__('cr_number'))->searchable(),
                 Tables\Columns\TextColumn::make('about')->label(__('about')),
-                Tables\Columns\TextColumn::make('filed')->label(__('filed'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('field.name')->label(__('filed'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('owner_fullname')->label(__('owner_fullname'))->searchable(),
                 Tables\Columns\TextColumn::make('owner_phone')->label(__('owner_phone'))->searchable(),
                 Tables\Columns\TextColumn::make('owner_email')->label(__('owner_email'))->searchable(),
@@ -120,7 +122,8 @@ class CompanyResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('filed')
+                ->options(Field::all()->pluck('name', 'id')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -151,6 +154,7 @@ class CompanyResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export'),
             ]);
     }
 
