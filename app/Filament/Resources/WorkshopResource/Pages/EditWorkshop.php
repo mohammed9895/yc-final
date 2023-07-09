@@ -25,38 +25,38 @@ class EditWorkshop extends EditRecord
 
         $titles = $data['title'];
         if ($titles) {
-            $data['title_en'] = $titles['en'];
-            $data['title_ar'] = $titles['ar'];
+            $data['title_en'] = $titles['en'] ?? '';
+            $data['title_ar'] = $titles['ar'] ?? '';
         }
 
         $slugs = $data['slug'];
         if ($slugs) {
-            $data['slug'] = $slugs['en'];
+            $data['slug'] = $slugs['en'] ?? '';
         }
 
         $descriptions = $data['description'];
         if ($descriptions) {
-            $data['description_en'] = $descriptions['en'];
-            $data['description_ar'] = $descriptions['ar'];
+            $data['description_en'] = $descriptions['en'] ?? '';
+            $data['description_ar'] = $descriptions['ar'] ?? '';
         }
 
         $conditions = $data['conditions'];
         if ($conditions) {
-            $data['conditions_en'] = $conditions['en'];
-            $data['conditions_ar'] = $conditions['ar'];
+            $data['conditions_en'] = $conditions['en'] ?? '';
+            $data['conditions_ar'] = $conditions['ar'] ?? '';
         }
 
 
         $covers = $data['cover'];
         if ($covers) {
-            $data['cover_en'] = $covers['en'];
-            $data['cover_ar'] = $covers['ar'];
+            $data['cover_en'] = $covers['en'] ?? '';
+            $data['cover_ar'] = $covers['ar'] ?? '';
         }
 
         $questions = $data['questions'];
         if ($questions !== NULL) {
-            $data['question_en'] = $questions['en'];
-            $data['question_ar'] = $questions['ar'];
+            $data['question_en'] = $questions['en'] ?? '';
+            $data['question_ar'] = $questions['ar'] ?? '';
         }
         return $data;
     }
