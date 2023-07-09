@@ -27,6 +27,8 @@ class TrainingApplication extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.training-application';
 
+    public $registred = 0;
+
     public function getTitle(): string
     {
         return   __('Training Application');
@@ -39,6 +41,7 @@ class TrainingApplication extends Page implements HasForms, HasTable
 
     public function mount(): void
     {
+        $this->registred = \App\Models\TrainingApplication::where('user_id', auth()->id())->count();
         $this->form->fill();
     }
 
