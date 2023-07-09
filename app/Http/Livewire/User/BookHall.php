@@ -10,7 +10,7 @@ class BookHall extends Component
     public $halls;
     public function mount()
     {
-        $halls = Hall::all();
+        $halls = Hall::all()->where('status', 1);
         $this->halls = $halls;
     }
     public function render()
