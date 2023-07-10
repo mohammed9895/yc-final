@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\User;
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Livewire\Event;
 use App\Models\Slot;
 use App\Models\User;
@@ -154,13 +155,11 @@ class MyBookings extends Component implements HasTable
         $slot_end_date = Carbon::parse($slots_dates->end_date);
         $slot_days_count = $slot_start_date->diffInDays($slot_end_date);
 
-//        $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance', 1)->count();
-//        if ($slot_days_count === 0) {
-//            $slot_days_count = 1;
-//        }
-//        if ($slot_days_count === $present_attendees) {
+        $workshop_info = Workshop::where('id', $workshop)->first();
 
-            $workshop_info = Workshop::where('id', $workshop)->first();
+        $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance', 1)->count();
+
+        if ($workshop_info->days + 1 === $present_attendees) {
 
             $outputFile = Storage::disk('local')->path("\/certificates/" . auth()->user()->name . ".pdf");
 
@@ -176,12 +175,22 @@ class MyBookings extends Component implements HasTable
                 'Content-Type: application/pdf',
             );
 
-            $filename = $workshop_info->title . ' Certificate.pdf';
+
+            $filename = str_ireplace(array('\'', '"',
+                    ',', ';', '<', '>'), '', Str::kebab($workshop_info->title)) . '-certificate.pdf';
+            ray($filename);
             Notification::make()
-                ->title('Certificate downloaded successfuly')
+                ->title('Certificate downloaded successfully')
                 ->success()
                 ->send();
             return Response::download($outputFile, $filename, $headers);
+        }
+        else {
+            Notification::make()
+                ->title('You are not eligible for certificate')
+                ->danger()
+                ->send();
+        }
 
     }
 

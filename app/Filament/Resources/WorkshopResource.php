@@ -93,6 +93,7 @@ class WorkshopResource extends Resource
                             ->schema([
                                 TextInput::make('slug')->label(__('slug')),
                                 TextInput::make('capacity')->numeric()->label(__('capacity')),
+                                TextInput::make('days')->required()->numeric()->label(__('Days')),
                                 Select::make('place_id')->options(Place::all()->pluck('name', 'id'))->searchable()->label(__('place')),
                                 Select::make('path_id')->options(Path::all()->pluck('name', 'id'))->searchable()->label(__('path')),
                                 Select::make('hall_id')->options(Hall::all()->pluck('name', 'id'))->searchable()->label(__('hall')),

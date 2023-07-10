@@ -87,6 +87,7 @@ class EditWorkshop extends EditRecord
             'conditions' => $data['conditions'],
             'slug' => $data['slug'],
             'cover' => $data['cover'],
+            'days' => $data['days'],
             'questions' => $data['questions'],
             'has_questions' => $data['has_questions'],
             'capacity' => $data['capacity'],
