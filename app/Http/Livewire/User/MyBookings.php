@@ -159,7 +159,7 @@ class MyBookings extends Component implements HasTable
 
         $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance', 1)->count();
 
-        if ($workshop_info->days + 1 === $present_attendees) {
+        if ($workshop_info->days === $present_attendees) {
 
             $outputFile = Storage::disk('local')->path("\/certificates/" . auth()->user()->name . ".pdf");
 
