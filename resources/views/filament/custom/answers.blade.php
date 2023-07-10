@@ -1,8 +1,5 @@
 <div>
     @foreach($record->answers as $answer)
-       @php
-           ray($answer);
-       @endphp
         @foreach($answer as $q => $a)
             @if(is_array($a))
                 @foreach($a as $answerss)
