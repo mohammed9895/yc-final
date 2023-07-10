@@ -178,7 +178,6 @@ class MyBookings extends Component implements HasTable
 
             $filename = str_ireplace(array('\'', '"',
                     ',', ';', '<', '>'), '', Str::kebab($workshop_info->title)) . '-certificate.pdf';
-            ray($filename);
             Notification::make()
                 ->title('Certificate downloaded successfully')
                 ->success()
