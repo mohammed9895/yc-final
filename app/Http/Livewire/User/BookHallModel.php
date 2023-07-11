@@ -128,6 +128,8 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                 ->where('user_id', auth()->id())
                 ->exists();
 
+
+
             if ($events > 0) {
                 session()->flash('error', __('This booking timing is not available!'));
                 Notification::make()

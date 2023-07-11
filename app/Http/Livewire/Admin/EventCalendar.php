@@ -57,9 +57,9 @@ class EventCalendar extends Component
         $slots = Slot::with('workshop')->get()->toArray();
 
         $workshop = [];
-        // dd($slots);
         for ($s = 0; $s < count($slots); $s++) {
             if (Config::get('app.locale') == 'ar') {
+                ray($slots[$s]['workshop']['id']);
                 $workshop[$s]['title'] = $slots[$s]['workshop']['title']['ar'];
             } else {
                 $workshop[$s]['title'] = $slots[$s]['workshop']['title']['en'];
