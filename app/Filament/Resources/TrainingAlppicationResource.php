@@ -70,7 +70,7 @@ class TrainingAlppicationResource extends Resource
                 Tables\Columns\TextColumn::make('province.name')->label(__('province')),
                 Tables\Columns\TextColumn::make('educationType.name')->label(__('filament::users.degree')),
                 Tables\Columns\TextColumn::make('employeeType.name')->label(__('filament::users.work')),
-                Tables\Columns\TextColumn::make('cv')->label(__('CV'))->url(fn ($record) => 'https://yc.om/storage/' . $record->cv)->openUrlInNewTab()->prefix('https://yc.om/cp/storage/app/public/'),
+                Tables\Columns\TextColumn::make('cv')->label(__('CV'))->url(fn ($record) => 'https://yc.om/storage/' . $record->cv)->openUrlInNewTab()->prefix('https://yc.om/storage/'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')
