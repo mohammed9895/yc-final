@@ -29,6 +29,8 @@ class TrainingApplication extends Page implements HasForms, HasTable
 
     public $registred = 0;
 
+    public $open = true;
+
     public function getTitle(): string
     {
         return   __('Training Application');

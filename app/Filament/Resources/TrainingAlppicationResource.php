@@ -70,15 +70,16 @@ class TrainingAlppicationResource extends Resource
                 Tables\Columns\TextColumn::make('province.name')->label(__('province')),
                 Tables\Columns\TextColumn::make('educationType.name')->label(__('filament::users.degree')),
                 Tables\Columns\TextColumn::make('employeeType.name')->label(__('filament::users.work')),
+                Tables\Columns\TextColumn::make('cv')->label(__('CV'))->url(fn ($record) => 'https://yc.om/cp/storage/app/public/' . $record->cv)->openUrlInNewTab()->prefix('https://yc.om/cp/storage/app/public/'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('province_id')->searchable()->options(Province::all()->pluck('name', 'id'))->label(__('province')),
-                Tables\Filters\SelectFilter::make('education_type_id')->searchable()->options(EducationType::all()->pluck('name', 'id'))->label(__('filament::users.degree')),
-                Tables\Filters\SelectFilter::make('employee_type_id')->searchable()->options(EmployeeType::all()->pluck('name', 'id'))->label(__('filament::users.work')),
+                Tables\Filters\SelectFilter::make('province_id')->searchable()->options(Province::all()->pluck('name', 'id'))->label(__('province'))->multiple(),
+                Tables\Filters\SelectFilter::make('education_type_id')->searchable()->options(EducationType::all()->pluck('name', 'id'))->label(__('filament::users.degree'))->multiple(),
+                Tables\Filters\SelectFilter::make('employee_type_id')->searchable()->options(EmployeeType::all()->pluck('name', 'id'))->label(__('filament::users.work'))->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

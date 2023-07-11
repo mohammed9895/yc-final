@@ -160,24 +160,29 @@ class BookingResource extends Resource
                         2 => __('Approvied'),
                         3 => __('canceled')
                     ]),
-//                SelectFilter::make('workshop_id')
-//                    ->multiple()
-//                    ->label(__('Workshop'))
-//                    ->options(Workshop::all()->pluck('title', 'id')),
-//                SelectFilter::make('slot_id')
-//                    ->multiple()
-//                    ->label(__('Slot'))
-//                    ->options(Slot::all()->pluck('name', 'id')),
-                SelectFilter::make('user')->relationship('user', 'state')->label(__('states'))->options(State::all()->pluck('name', 'id')),
+                SelectFilter::make('user')
+                    ->relationship('user', 'state')
+                    ->label(__('State'))
+                    ->options(State::all()->pluck('name', 'id'))
+                ->searchable()
+                ->multiple(),
                 Filter::make('workshop_id')
                     ->form([
                         Select::make('place_id')
                             ->label(__('Place'))
                             ->options(Place::all()->pluck('name', 'id'))
-                            ->searchable(),
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set) => $set('workshop_id', null)),
                         Select::make('workshop_id')
                             ->label(__('Workshop'))
-                            ->options(Workshop::all()->pluck('title', 'id'))
+                            ->options(function (callable $get) {
+                                $place = Place::find($get('place_id'));
+                                if (!$place) {
+                                    return Workshop::all()->pluck('title', 'id');
+                                }
+                                return $place->workshop->pluck('title', 'id');
+                            })
                             ->searchable()
                             ->reactive()
                             ->afterStateUpdated(fn (callable $set) => $set('slot_id', null)),
