@@ -55,8 +55,7 @@ class TrainingAlppicationResource extends Resource
                 Forms\Components\TextInput::make('employee_type_id')->label(__('filament::users.work'))
                     ->required(),
                 Forms\Components\FileUpload::make('cv')
-                    ->required()
-                    ->maxLength(255),
+                    ->required(),
             ]);
     }
 
