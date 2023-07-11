@@ -14,6 +14,7 @@ use App\Models\TrainingApplication;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Notifications\SmsMessage;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -67,6 +68,7 @@ class TrainingAlppicationResource extends Resource
                 TextColumn::make('user.name')->label(__('User'))
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('province.name')->label(__('province')),
                 Tables\Columns\TextColumn::make('educationType.name')->label(__('filament::users.degree')),
                 Tables\Columns\TextColumn::make('employeeType.name')->label(__('filament::users.work')),
