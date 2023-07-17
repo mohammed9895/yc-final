@@ -21,8 +21,10 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
@@ -66,6 +68,7 @@ class TrainingAlppicationResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('user.name')->label(__('User'))
+                    ->searchable()
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
                 TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
@@ -94,7 +97,35 @@ class TrainingAlppicationResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                FilamentExportBulkAction::make('export')
+                FilamentExportBulkAction::make('export'),
+
+
+                BulkAction::make('reject')
+                    ->label(__('reject'))
+                    ->action(function (Collection $records) {
+                        foreach ($records as $record) {
+
+                            $user = User::where('id', $record->user_id)->first();
+
+                            $sms = new SmsMessage;
+                            if ($user->preferred_language == 'ar') {
+                                $sms->to($user->phone)
+                                    ->message('نشكركم على تفاعلكم و تسجيلكم في إعلان المتدربين، ونتعذر منكم لعدم قبولكم بسبب محدودية العدد المطلوب، ونتمنى تكونوا دائمًا جزء من برامجنا وفعالياتنا خلال الفترة القادمة.')
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            } else {
+                                $sms->to($user->phone)
+                                    ->message('We appreciate your interaction and application in the training announcement. However, we do regret to inform you that you have not been shortlisted this time due to the limited numbers required. We hope that you will always be part of our programs and events during the coming period.')
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            }
+
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion()
+                    ->icon('heroicon-o-check-circle')
+                    ->color('danger')
+                    ->requiresConfirmation(),
             ]);
     }
 
