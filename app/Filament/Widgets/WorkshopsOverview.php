@@ -25,4 +25,14 @@ class WorkshopsOverview extends BaseWidget
             Card::make('Total Bookings', Booking::count()),
         ];
     }
+
+    public function getFilters(): array
+    {
+        return [
+            'T' => __('filament-google-analytics::widgets.T'),
+            'TW' => __('filament-google-analytics::widgets.TW'),
+            'TM' => __('filament-google-analytics::widgets.TM'),
+            'TY' => __('filament-google-analytics::widgets.TY'),
+        ];
+    }
 }

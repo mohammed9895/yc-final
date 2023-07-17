@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Filament\Widgets\LineChartWidget;
@@ -18,6 +19,9 @@ class UsersChart extends LineChartWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    public ?string $filter = 'today';
+
+
     protected function getHeading(): string
     {
         return 'Users';
@@ -26,13 +30,55 @@ class UsersChart extends LineChartWidget
     protected function getData(): array
     {
 
-        $data = Trend::model(User::class)
-            ->between(
-                start: now()->startOfYear(),
-                end: now()->endOfYear(),
-            )
-            ->perMonth()
-            ->count();
+
+
+        $activeFilter = $this->filter;
+
+        if ($activeFilter == 'week') {
+            $startDate =now()->startOfWeek()->subWeek();
+            $endDate = now()->endOfWeek()->subWeek();
+            $data = Trend::model(User::class)
+                ->between(
+                    start: $startDate,
+                    end: $endDate,
+                )
+                ->perDay()
+                ->count();
+        }
+        else if ($activeFilter == 'today') {
+            $startDate = now()->startOfDay();
+            $endDate = now();
+            $data = Trend::model(User::class)
+                ->between(
+                    start: $startDate,
+                    end: $endDate,
+                )
+                ->perHour()
+                ->count();
+        }
+        else if ($activeFilter == 'month') {
+            $startDate = now()->startOfMonth()->subMonth();
+            $endDate = now()->endOfMonth()->subMonth();
+            $data = Trend::model(User::class)
+                ->between(
+                    start: $startDate,
+                    end: $endDate,
+                )
+                ->perDay()
+                ->count();
+        }
+        else {
+            $startDate = now()->startOfYear();
+            $endDate = now()->endOfYear();
+            $data = Trend::model(User::class)
+                ->between(
+                    start: $startDate,
+                    end: $endDate,
+                )
+                ->perMonth()
+                ->count();
+        }
+
 
 
         return [
@@ -43,6 +89,16 @@ class UsersChart extends LineChartWidget
                 ],
             ],
             'labels' => $data->map(fn (TrendValue $value) => $value->date),
+        ];
+    }
+
+    protected function getFilters(): ?array
+    {
+        return [
+            'today' => 'Today',
+            'week' => 'Last week',
+            'month' => 'Last month',
+            'year' => 'This year',
         ];
     }
 }

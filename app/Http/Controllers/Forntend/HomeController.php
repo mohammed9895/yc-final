@@ -9,6 +9,11 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
+    public function __construct()
+    {
+        app()->setLocale('ar');
+    }
+
     public function index()
     {
         $paths = Path::all();

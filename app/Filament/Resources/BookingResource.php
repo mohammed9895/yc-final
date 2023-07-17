@@ -129,6 +129,7 @@ class BookingResource extends Resource
                     ->searchable()
                     ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('user.phone')
                     ->label(__('filament::users.phone'))
                     ->searchable(),

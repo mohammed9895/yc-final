@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Closure;
 use Filament\Forms;
 use App\Models\User;
@@ -15,6 +16,7 @@ use Filament\Resources\Form;
 use App\Models\EducationType;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
 use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
@@ -135,6 +137,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('phone')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('disability.name')->searchable()->sortable(),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\BadgeColumn::make('gender')
                     ->enum([
                         0 => 'Male',
