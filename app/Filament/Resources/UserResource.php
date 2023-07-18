@@ -137,7 +137,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('phone')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('disability.name')->searchable()->sortable(),
-                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
+                TextColumn::make('birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\BadgeColumn::make('gender')
                     ->enum([
                         0 => 'Male',
