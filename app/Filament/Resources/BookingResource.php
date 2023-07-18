@@ -220,30 +220,67 @@ class BookingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Action::make('approve')->action('approve')
+                Action::make('approve')
                     ->label(__('approve'))
-                    ->action(function (Booking $record) {
+                    ->action(function (Booking $record, array $data) {
                         $user = User::where('id', $record->user_id)->first();
                         $slot = Slot::where('id', '=', $record->slot_id)->first();
                         $workshop = Workshop::where('id', '=', $record->workshop_id)->first();
                         $sms = new SmsMessage;
                         if ($user->preferred_language == 'ar') {
-                            $sms->to($user->phone)
-                                ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
-                                ->lang($user->preferred_language)
-                                ->send();
+                            if ($data['type'] == 'default') {
+                                $sms->to($user->phone)
+                                    ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            }
+                            else {
+                                $sms->to($user->phone)
+                                    ->message($data['message_ar'])
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            }
                         } else {
-                            $sms->to($user->phone)
-                                ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
-                                ->lang($user->preferred_language)
-                                ->send();
+                            if ($data['type'] == 'default') {
+                                $sms->to($user->phone)
+                                    ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            }
+                            else {
+                                $sms->to($user->phone)
+                                    ->message($data['message_en'])
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            }
                         }
                         Booking::where('id', $record->id)->update(['status' => 2]);
                     })
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->hidden(fn (Booking $record) => $record->status === 2)
-                    ->requiresConfirmation(),
+                    ->form([
+                       Forms\Components\Radio::make('type')->label(__('Message Type'))->options([
+                           'default' => 'Default',
+                           'custom' => 'Custom',
+                       ])
+                        ->reactive()
+                        ->required(),
+                        Forms\Components\Textarea::make('message_ar')
+                            ->required()
+                            ->visible(function (callable $get) {
+                                if ($get('type') == 'custom'){
+                                    return true;
+                                }
+                            }),
+                        Forms\Components\Textarea::make('message_en')
+                            ->required()
+                            ->visible(function (callable $get) {
+                            if ($get('type') == 'custom'){
+                                return true;
+                            }
+                        }),
+                    ]),
 
                 Action::make('reject')->action('reject')
                     ->label(__('reject'))
@@ -331,7 +368,7 @@ class BookingResource extends Resource
             ->bulkActions([
                 BulkAction::make('approve')
                     ->label(__('approve'))
-                    ->action(function (Collection $records) {
+                    ->action(function (Collection $records, array $data) {
                         foreach ($records as $record) {
                             $user = User::where('id', $record->user_id)->first();
                             $slot = Slot::where('id', '=', $record->slot_id)->first();
@@ -339,15 +376,31 @@ class BookingResource extends Resource
 
                             $sms = new SmsMessage;
                             if ($user->preferred_language == 'ar') {
-                                $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
-                                    ->lang($user->preferred_language)
-                                    ->send();
+                                if ($data['type'] == 'default') {
+                                    $sms->to($user->phone)
+                                        ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
+                                        ->lang($user->preferred_language)
+                                        ->send();
+                                }
+                                else {
+                                    $sms->to($user->phone)
+                                        ->message($data['message_ar'])
+                                        ->lang($user->preferred_language)
+                                        ->send();
+                                }
                             } else {
-                                $sms->to($user->phone)
-                                    ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
-                                    ->lang($user->preferred_language)
-                                    ->send();
+                                if ($data['type'] == 'default') {
+                                    $sms->to($user->phone)
+                                        ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
+                                        ->lang($user->preferred_language)
+                                        ->send();
+                                }
+                                else {
+                                    $sms->to($user->phone)
+                                        ->message($data['message_en'])
+                                        ->lang($user->preferred_language)
+                                        ->send();
+                                }
                             }
 
                             Booking::where('id', $record->id)->update(['status' => 2]);
@@ -356,7 +409,28 @@ class BookingResource extends Resource
                     ->deselectRecordsAfterCompletion()
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->requiresConfirmation(),
+                    ->form([
+                        Forms\Components\Radio::make('type')->label(__('Message Type'))->options([
+                            'default' => 'Default',
+                            'custom' => 'Custom',
+                        ])
+                            ->reactive()
+                            ->required(),
+                        Forms\Components\Textarea::make('message_ar')
+                            ->required()
+                            ->visible(function (callable $get) {
+                                if ($get('type') == 'custom'){
+                                    return true;
+                                }
+                            }),
+                        Forms\Components\Textarea::make('message_en')
+                            ->required()
+                            ->visible(function (callable $get) {
+                                if ($get('type') == 'custom'){
+                                    return true;
+                                }
+                            }),
+                    ]),
                 BulkAction::make('reject')
                     ->label(__('reject'))
                     ->action(function (Collection $records, array $data) {
