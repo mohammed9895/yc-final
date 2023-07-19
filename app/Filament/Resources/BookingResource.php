@@ -379,26 +379,26 @@ class BookingResource extends Resource
                                 if ($data['type'] == 'default') {
                                     $sms->to($user->phone)
                                         ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
-                                        ->lang($user->preferred_language)
+                                        ->lang('ar')
                                         ->send();
                                 }
                                 else {
                                     $sms->to($user->phone)
                                         ->message($data['message_ar'])
-                                        ->lang($user->preferred_language)
+                                        ->lang('ar')
                                         ->send();
                                 }
                             } else {
                                 if ($data['type'] == 'default') {
                                     $sms->to($user->phone)
                                         ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
-                                        ->lang($user->preferred_language)
+                                        ->lang('en')
                                         ->send();
                                 }
                                 else {
                                     $sms->to($user->phone)
                                         ->message($data['message_en'])
-                                        ->lang($user->preferred_language)
+                                        ->lang('en')
                                         ->send();
                                 }
                             }
