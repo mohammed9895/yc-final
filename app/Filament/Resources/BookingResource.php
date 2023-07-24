@@ -99,7 +99,9 @@ class BookingResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->label(__('User'))
                     ->options(User::all()->pluck('name', 'id'))
-                    ->searchable()->label('User')
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $search) => User::where('email', 'like', "%{$search}%")->limit(10)->pluck('name', 'id'))
+                    ->label('User')
                     ->required(),
                 Forms\Components\TextInput::make('reasone')
                     ->label(__('reasone'))
