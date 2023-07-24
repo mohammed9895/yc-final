@@ -2,17 +2,20 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Attendees;
 use App\Models\Booking;
 use App\Models\Slot;
 use App\Models\Workshop;
 use Closure;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Illuminate\Contracts\View\View;
@@ -27,6 +30,8 @@ class TakeAttendees extends Page implements HasForms
 
     public $attendance;
     public $slot_id = 108;
+
+    public $users = [];
 
     public function mount(): void
     {
@@ -52,16 +57,29 @@ class TakeAttendees extends Page implements HasForms
                 })
                 ->afterStateUpdated(function (Closure $set, $state) {
                     $this->slot_id = $state;
-                    $this->dispatchBrowserEvent('refresh-page');
+                    $this->attendance = Booking::where('slot_id', '=',  $state)->where('status', '=', 2)->get();
                 })
                 ->searchable()
                 ->reactive()
                 ->required(),
+            DatePicker::make('date'),
         ];
     }
 
-    public function save()
+    public function save() :void
     {
-
+        $orginal = $this->form->getState();
+        foreach ($this->users as $key => $value) {
+            Attendees::create([
+                'user_id' => $key,
+                'slot_id' => $this->slot_id,
+                'attendance' => $value,
+                'date' => $orginal['date']
+            ]);
+        }
+        Notification::make()
+            ->title('Attendance has been taken successfully!')
+            ->success()
+            ->send();
     }
 }
