@@ -102,11 +102,8 @@ class BookingResource extends Resource
                     ->searchable()->label('User')
                     ->required(),
                 Forms\Components\TextInput::make('reasone')
-                    ->label(__('updated_at'))
+                    ->label(__('reasone'))
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('rejection_message')
-                    ->label(__('updated_at'))
                     ->maxLength(255),
                 Forms\Components\Select::make('status')->options([
                     0 => 'Waiting',
