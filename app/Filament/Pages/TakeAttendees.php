@@ -6,6 +6,7 @@ use App\Models\Attendees;
 use App\Models\Booking;
 use App\Models\Slot;
 use App\Models\Workshop;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Closure;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -23,7 +24,7 @@ use Illuminate\Contracts\View\View;
 class TakeAttendees extends Page implements HasForms
 {
 
-    use InteractsWithForms;
+    use InteractsWithForms, HasPageShield;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.take-attendees';
