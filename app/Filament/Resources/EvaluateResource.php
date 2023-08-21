@@ -2,19 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Models\Slot;
-use Filament\Tables;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\EvaluateResource\Pages;
+use App\Filament\Resources\EvaluateResource\RelationManagers;
 use App\Models\Evaluate;
 use App\Models\Workshop;
+use Filament\Forms;
 use Filament\Resources\Form;
-use Filament\Resources\Table;
 use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\EvaluateResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\EvaluateResource\RelationManagers;
 
 class EvaluateResource extends Resource
 {
@@ -22,19 +20,14 @@ class EvaluateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    protected static function getNavigationGroup(): ?string
-    {
-        return   __('workshops');
-    }
-
     public static function getModelLabel(): string
     {
-        return   __('evaluates');
+        return __('evaluates');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return   __('evaluates');
+        return __('evaluates');
     }
 
     public static function form(Form $form): Form
@@ -96,7 +89,10 @@ class EvaluateResource extends Resource
                     ->options(Workshop::all()->pluck('title', 'id')),
             ])
             ->actions([])
-            ->bulkActions([]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export')
+            ]);
     }
 
     public static function getRelations(): array
@@ -116,5 +112,10 @@ class EvaluateResource extends Resource
         return [
             'index' => Pages\ListEvaluates::route('/'),
         ];
+    }
+
+    protected static function getNavigationGroup(): ?string
+    {
+        return __('workshops');
     }
 }
