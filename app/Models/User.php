@@ -3,18 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Freelancers;
-use Carbon\Carbon;
-use App\Models\GCCCamp;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\HasAvatar;
-use Illuminate\Notifications\Notifiable;
-use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Interfaces\MustVerifyMobile as IMustVerifyMobile;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasAvatar
 {
@@ -55,7 +49,7 @@ class User extends Authenticatable implements HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return '/storage/' . $this->avatar;
+        return '/storage/'.$this->avatar;
     }
 
     public function isAdmin()
@@ -99,6 +93,11 @@ class User extends Authenticatable implements HasAvatar
         return $this->hasMany(Booking::class);
     }
 
+    public function talents()
+    {
+        return $this->hasMany(Talent::class);
+    }
+
     public function workshops()
     {
         return $this->hasMany(Workshop::class);
@@ -128,6 +127,7 @@ class User extends Authenticatable implements HasAvatar
     {
         return $this->hasMany(ThreeD::class);
     }
+
     public function trainingApplication()
     {
         return $this->hasMany(TrainingApplication::class);
@@ -147,6 +147,11 @@ class User extends Authenticatable implements HasAvatar
     public function GCCCamps()
     {
         return $this->hasMany(GCCCamp::class);
+    }
+
+    public function talent_requests()
+    {
+        return $this->hasMany(TalentRequest::class);
     }
 
     public function markPhoneAsVerified()
