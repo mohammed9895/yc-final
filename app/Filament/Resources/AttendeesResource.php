@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\AttendeesResource\Pages;
 use App\Filament\Resources\AttendeesResource\RelationManagers;
 use App\Models\Attendees;
@@ -82,6 +83,7 @@ class AttendeesResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export'),
             ]);
     }
 
