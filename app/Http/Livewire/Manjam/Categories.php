@@ -11,7 +11,6 @@ class Categories extends Component
     public function render()
     {
         $talent_types = TalentType::withCount('talents')->paginate(6);
-        ray($talent_types);
         return view('livewire.manjam.categories', compact('talent_types'));
     }
 }
