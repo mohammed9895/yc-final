@@ -16,6 +16,7 @@ class Talent extends Model
 
     protected $casts = [
         'social_media_links' => 'array'
+        'certificates' => 'array'
     ];
 
     public function user()
