@@ -15,7 +15,7 @@ class Talent extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'social_media_links' => 'array'
+        'social_media_links' => 'array',
         'certificates' => 'array'
     ];
 
