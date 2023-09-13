@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\AttendessOverview;
 use App\Filament\Widgets\UsersChart;
 use App\Filament\Widgets\LatestEvents;
 use App\Filament\Widgets\BookingsChart;
@@ -31,6 +32,7 @@ class Dashboard extends BasePage
             EventsOverview::class,
             HallBookingChart::class,
             LatestEvents::class,
+            AttendessOverview::class,
         ];
     }
 

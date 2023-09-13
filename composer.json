@@ -19,6 +19,7 @@
         "filament/filament": "^2.0",
         "flowframe/laravel-trend": "^0.1.5",
         "guava/filament-drafts": "^1.1",
+        "guava/filament-icon-picker": "^1.0",
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "^1.5",
         "khaled.alshamaa/ar-php": "^6.3",

@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Forntend;
+namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Models\Path;
 use App\Models\Statistice;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {

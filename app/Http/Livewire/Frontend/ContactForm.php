@@ -2,10 +2,9 @@
 
 namespace App\Http\Livewire\Frontend;
 
-use Livewire\Component;
 use App\Mail\ContactMail;
 use Illuminate\Support\Facades\Mail;
-use Filament\Notifications\Notification;
+use Livewire\Component;
 
 class ContactForm extends Component
 {
@@ -30,14 +29,10 @@ class ContactForm extends Component
 
     public function submitForm()
     {
-
         $this->validate();
-        
-
-        Mail::to('info@yc.om')->send(new ContactMail($this->fullname, $this->phone, $this->email, $this->subject, $this->message));
-        
+        Mail::to('info@yc.om')->send(new ContactMail($this->fullname, $this->phone, $this->email, $this->subject,
+            $this->message));
         session()->flash('message', 'Email Sent Successfuly');
-
         $this->reset();
     }
 }

@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\App;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\Manjam\CategoriesController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Forntend\HomeController;
 use JeffGreco13\FilamentBreezy\Http\Livewire\Auth\ResetPassword;
 
 /*
@@ -38,6 +37,16 @@ Route::get('/test', function () {
     return "test";
 });
 
-Route::get('/termsandconditions', function() {
+Route::get('/termsandconditions', function () {
     return view('frontend.terms');
 });
+
+
+Route::view('/manjam', 'frontend.manjam');
+
+Route::get('/manjam/talent_type/{talent_type}', \App\Http\Livewire\Manjam\TalentType::class);
+
+
+// MANJAM
+Route::get('/manjam/categories', [CategoriesController::class, 'index'])->name('manjam.all_categories');
+Route::get('/manjam/categories/{talent_type}', [CategoriesController::class, 'show']);

@@ -3,22 +3,19 @@
 namespace App\Filament\Resources;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use Filament\Forms;
-use App\Models\User;
-use Filament\Tables;
-use App\Models\GCCCamp;
-use Filament\Resources\Form;
-use Filament\Resources\Table;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Checkbox;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\GCCCampResource\Pages;
+use App\Models\GCCCamp;
+use App\Models\User;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 
 
 class GCCCampResource extends Resource
@@ -29,12 +26,12 @@ class GCCCampResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return   __('إستمارات المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارات المشاركة في مخيم الشباب الخليجي 2023');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return   __('إستمارات المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارات المشاركة في مخيم الشباب الخليجي 2023');
     }
 
     public static function form(Form $form): Form
@@ -78,7 +75,7 @@ class GCCCampResource extends Resource
                                 TextInput::make('crisis_stage')
                                     ->required()
                                     ->label('إذا كان الجواب نعم الرجاء ذكر مرحلة الأزمة')
-                                    ->visible(fn (callable $get) =>  $get('has_respiratory_issues')),
+                                    ->visible(fn(callable $get) => $get('has_respiratory_issues')),
                                 Checkbox::make('has_diabetes')
                                     ->label('مرض السكر ؟'),
                                 Checkbox::make('has_head_injury')
@@ -87,7 +84,7 @@ class GCCCampResource extends Resource
                                 TextInput::make('head_injury_details')
                                     ->required()
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالإصابة')
-                                    ->visible(fn (callable $get) => $get('has_head_injury')),
+                                    ->visible(fn(callable $get) => $get('has_head_injury')),
                                 Checkbox::make('is_registered_disabled')
                                     ->label('هل أنت مسجل رسميا كصاحب احتياجات خاصة؟'),
                                 Checkbox::make('has_bone_or_tendon_injury')
@@ -96,14 +93,14 @@ class GCCCampResource extends Resource
                                 TextInput::make('bone_tendon_injury_details')
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالإصابة')
                                     ->required()
-                                    ->visible(fn (callable $get) => $get('has_bone_or_tendon_injury')),
+                                    ->visible(fn(callable $get) => $get('has_bone_or_tendon_injury')),
                                 Checkbox::make('has_infectious_disease')
                                     ->reactive()
                                     ->label('هل تعاني من أي مرض معدي أو تحمل مكروبات أمراض معدية ؟'),
                                 TextInput::make('infectious_disease_details')
                                     ->required()
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالمرض')
-                                    ->visible(fn (callable $get) => $get('has_infectious_disease')),
+                                    ->visible(fn(callable $get) => $get('has_infectious_disease')),
                                 Checkbox::make('had_medical_treatment')
                                     ->required()
                                     ->reactive()
@@ -111,7 +108,7 @@ class GCCCampResource extends Resource
                                 TextInput::make('medical_treatment_details')
                                     ->required()
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالسبب')
-                                    ->visible(fn (callable $get) => $get('had_medical_treatment')),
+                                    ->visible(fn(callable $get) => $get('had_medical_treatment')),
                                 Select::make('blood_type')
                                     ->required()
                                     ->searchable()
@@ -169,7 +166,7 @@ class GCCCampResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->searchable()
-                    ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
+                    ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('user.phone')->searchable()->label('Phone'),
                 Tables\Columns\TextColumn::make('user.email')->searchable()->label('Email'),

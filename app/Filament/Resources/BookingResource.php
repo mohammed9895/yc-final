@@ -498,7 +498,6 @@ class BookingResource extends Resource
             'edit' => Pages\EditBooking::route('/{record}/edit'),
         ];
     }
-
     public function download() {
        ray('test');
     }

@@ -71,7 +71,7 @@ class TakeAttendees extends Page implements HasForms
     {
         $orginal = $this->form->getState();
         foreach ($this->users as $key => $value) {
-            Attendees::create([
+            Attendees::updateOrCreate([
                 'user_id' => $key,
                 'slot_id' => $this->slot_id,
                 'attendance' => $value,

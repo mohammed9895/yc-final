@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Slot extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'schedule',
@@ -26,5 +27,10 @@ class Slot extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function attendees()
+    {
+        return $this->hasMany(Attendees::class);
     }
 }
