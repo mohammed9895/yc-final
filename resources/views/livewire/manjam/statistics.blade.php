@@ -9,7 +9,7 @@
                 </svg>
             </div>
             <div class="ml-4 rtl:ml-0 rtl:mr-4">
-                <h3 class="text-3xl text-[#684e9a] font-bold">+1K</h3>
+                <h3 class="text-3xl text-[#684e9a] font-bold">+{{ $talents_count }}</h3>
                 <p>{{ __('Total Talents') }}</p>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 </svg>
             </div>
             <div class="ml-4 rtl:ml-0 rtl:mr-4">
-                <h3 class="text-3xl text-[#684e9a] font-bold">+1K</h3>
+                <h3 class="text-3xl text-[#684e9a] font-bold">+{{ $talent_type_count }}</h3>
                 <p>{{ __('Total Categories') }}</p>
             </div>
         </div>
@@ -35,7 +35,7 @@
                 </svg>
             </div>
             <div class="ml-4 rtl:ml-0 rtl:mr-4">
-                <h3 class="text-3xl text-[#684e9a] font-bold">+1K</h3>
+                <h3 class="text-3xl text-[#684e9a] font-bold">+{{ $talent_request_count }}</h3>
                 <p>{{ __('Total Request') }}</p>
             </div>
         </div>
@@ -48,7 +48,7 @@
                 </svg>
             </div>
             <div class="ml-4 rtl:ml-0 rtl:mr-4">
-                <h3 class="text-3xl text-[#684e9a] font-bold">+1K</h3>
+                <h3 class="text-3xl text-[#684e9a] font-bold">+16</h3>
                 <p>{{ __('Total Programs') }}</p>
             </div>
         </div>
