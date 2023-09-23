@@ -2,30 +2,28 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\User;
-use App\Models\State;
 use App\Models\Country;
-use Filament\Forms\Components\Checkbox;
-use Livewire\Component;
-use App\Models\Province;
 use App\Models\Disability;
-use App\Models\EmployeeType;
 use App\Models\EducationType;
+use App\Models\EmployeeType;
+use App\Models\Province;
+use App\Models\State;
+use App\Models\User;
 use Filament\Facades\Filament;
-use Illuminate\Support\HtmlString;
-use Illuminate\Contracts\View\View;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Wizard;
-use Filament\Forms\Contracts\HasForms;
-use Illuminate\Support\Facades\Config;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Wizard\Step;
-use Filament\Forms\Concerns\InteractsWithForms;
+use Illuminate\Support\HtmlString;
+use Livewire\Component;
 
 
 class Register extends Component implements HasForms
@@ -37,14 +35,58 @@ class Register extends Component implements HasForms
     public $name = '';
     public $email = '';
     public $password = '';
-    public $passwordConfirmation  = '';
+    public $passwordConfirmation = '';
 
 
     public function mount(): void
     {
-        $locale = session()->get('locale', 'en');
+        $locale = session()->get('locale', 'ar');
         app()->setLocale($locale);
         $this->form->fill();
+    }
+
+    public function register()
+    {
+        $phone_verified_code = random_int(10000, 99999);
+        $orginal = $this->form->getState();
+
+        if ($orginal['agreed_on_terms']) {
+            $orginal['phone_verified_code'] = $phone_verified_code;
+
+            // Combine first, middle, and family names to create the full name
+            $fullname = trim("{$orginal['first_name']} {$orginal['middle_name']} {$orginal['family_name']}");
+
+            // Remove first, middle, and family name attributes
+            unset($orginal['first_name'], $orginal['middle_name'], $orginal['family_name']);
+
+            // Set the full name attribute
+            $orginal['name'] = $fullname;
+
+            $messageSms = '';
+
+            if (Config::get('app.locale') == 'ar') {
+                $messageSms = "رمز التأكيد الخاص بك هو: ".$phone_verified_code;
+            } else {
+                $messageSms = "Your Verifcation code is ".$phone_verified_code;
+            }
+
+            $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
+            $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId='.env('User_ID_OTP',
+                    'youthsmsweb').'&Password='.env('OTP_Password',
+                    'L!ulid80').'&MobileNo='.$orginal['phone'].'&Message='.$messageSms.'&PushDateTime=10/12/2022 02:03:00&Lang='.$lang.'&FLashSMS=N');
+
+            $user = User::create($orginal);
+            $user->assignRole('filament_user');
+            Filament::auth()->login(user: $user, remember: true);
+            return redirect()->intended(Filament::getUrl('filament.pages.dashboard'));
+        } else {
+            return redirect()->back();
+        }
+    }
+
+    public function render(): View
+    {
+        return view('livewire.register');
     }
 
     protected function getFormSchema(): array
@@ -79,7 +121,7 @@ class Register extends Component implements HasForms
                             ->maxLength(50)
                             ->minLength(8)
                             ->same('passwordConfirmation')
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state)),
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state)),
                         TextInput::make('passwordConfirmation')
                             ->label(__('passwordConfirmation'))
                             ->password()
@@ -135,7 +177,7 @@ class Register extends Component implements HasForms
                             ->options(Province::all()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn (callable $set) => $set('state_id', null)),
+                            ->afterStateUpdated(fn(callable $set) => $set('state_id', null)),
                         Select::make('state_id')
                             ->label(__('state'))
                             ->required()
@@ -188,48 +230,5 @@ class Register extends Component implements HasForms
                         </button>'))
 
         ];
-    }
-
-    public function register()
-    {
-        $phone_verified_code =  random_int(10000, 99999);
-        $orginal = $this->form->getState();
-
-        if ($orginal['agreed_on_terms']) {
-            $orginal['phone_verified_code'] = $phone_verified_code;
-
-            // Combine first, middle, and family names to create the full name
-            $fullname = trim("{$orginal['first_name']} {$orginal['middle_name']} {$orginal['family_name']}");
-
-            // Remove first, middle, and family name attributes
-            unset($orginal['first_name'], $orginal['middle_name'], $orginal['family_name']);
-
-            // Set the full name attribute
-            $orginal['name'] = $fullname;
-
-            $messageSms = '';
-
-            if (Config::get('app.locale') == 'ar') {
-                $messageSms = "رمز التأكيد الخاص بك هو: " . $phone_verified_code;
-            } else {
-                $messageSms = "Your Verifcation code is " . $phone_verified_code;
-            }
-
-            $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
-            $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('User_ID_OTP', 'youthsmsweb') . '&Password=' . env('OTP_Password', 'L!ulid80') . '&MobileNo=' . $orginal['phone'] . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
-
-            $user = User::create($orginal);
-            $user->assignRole('filament_user');
-            Filament::auth()->login(user: $user, remember: true);
-            return redirect()->intended(Filament::getUrl('filament.pages.dashboard'));
-        }
-        else {
-            return redirect()->back();
-        }
-    }
-
-    public function render(): View
-    {
-        return view('livewire.register');
     }
 }
