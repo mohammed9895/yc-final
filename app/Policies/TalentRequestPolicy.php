@@ -12,7 +12,7 @@ class TalentRequestPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_talent_request');
+        return $user->can('view_any_talent::request');
     }
 
     /**
@@ -20,7 +20,7 @@ class TalentRequestPolicy
      */
     public function view(User $user, TalentRequest $talentRequest): bool
     {
-        return $user->can('view_talent_request');
+        return $user->can('view_talent::request');
     }
 
     /**
@@ -28,7 +28,7 @@ class TalentRequestPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_talent_request');
+        return $user->can('create_talent::request');
     }
 
     /**
@@ -36,7 +36,7 @@ class TalentRequestPolicy
      */
     public function update(User $user, TalentRequest $talentRequest): bool
     {
-        return $user->can('update_talent_request');
+        return $user->can('update_talent::request');
     }
 
     /**
@@ -44,7 +44,7 @@ class TalentRequestPolicy
      */
     public function delete(User $user, TalentRequest $talentRequest): bool
     {
-        return $user->can('delete_talent_request');
+        return $user->can('delete_talent::request');
     }
 
     /**
@@ -52,7 +52,7 @@ class TalentRequestPolicy
      */
     public function restore(User $user, TalentRequest $talentRequest): bool
     {
-        return $user->can('restore_talent_request');
+        return $user->can('restore_talent::request');
     }
 
     /**
@@ -60,6 +60,6 @@ class TalentRequestPolicy
      */
     public function forceDelete(User $user, TalentRequest $talentRequest): bool
     {
-      
+
     }
 }

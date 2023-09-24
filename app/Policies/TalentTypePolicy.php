@@ -12,7 +12,7 @@ class TalentTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_talent_type');
+        return $user->can('view_any_talent::type');
     }
 
     /**
@@ -20,7 +20,7 @@ class TalentTypePolicy
      */
     public function view(User $user, TalentType $talentType): bool
     {
-        return $user->can('view_talent_type');
+        return $user->can('view_talent::type');
     }
 
     /**
@@ -28,7 +28,7 @@ class TalentTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_talent_type');
+        return $user->can('create_talent::type');
     }
 
     /**
@@ -36,7 +36,7 @@ class TalentTypePolicy
      */
     public function update(User $user, TalentType $talentType): bool
     {
-        return $user->can('update_talent_type');
+        return $user->can('update_talent::type');
     }
 
     /**
@@ -44,7 +44,7 @@ class TalentTypePolicy
      */
     public function delete(User $user, TalentType $talentType): bool
     {
-        return $user->can('delete_talent_type');
+        return $user->can('delete_talent::type');
     }
 
     /**
@@ -52,7 +52,7 @@ class TalentTypePolicy
      */
     public function restore(User $user, TalentType $talentType): bool
     {
-        return $user->can('restore_talent_type');
+        return $user->can('restore_talent::type');
     }
 
     /**
@@ -60,6 +60,6 @@ class TalentTypePolicy
      */
     public function forceDelete(User $user, TalentType $talentType): bool
     {
-        
+
     }
 }

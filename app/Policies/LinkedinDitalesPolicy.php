@@ -12,7 +12,7 @@ class LinkedinDitalesPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_linkedin_ditales');
+        return $user->can('view_any_linkedin::ditales');
     }
 
     /**
@@ -20,7 +20,7 @@ class LinkedinDitalesPolicy
      */
     public function view(User $user, LinkedinDitales $linkedinDitales): bool
     {
-        return $user->can('view_linkedin_ditales');
+        return $user->can('view_linkedin::ditales');
     }
 
     /**
@@ -28,7 +28,7 @@ class LinkedinDitalesPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_linkedin_ditales');
+        return $user->can('create_linkedin::ditales');
     }
 
     /**
@@ -36,7 +36,7 @@ class LinkedinDitalesPolicy
      */
     public function update(User $user, LinkedinDitales $linkedinDitales): bool
     {
-        return $user->can('update_linkedin_ditales');
+        return $user->can('update_linkedin::ditales');
     }
 
     /**
@@ -44,7 +44,7 @@ class LinkedinDitalesPolicy
      */
     public function delete(User $user, LinkedinDitales $linkedinDitales): bool
     {
-        return $user->can('delete_linkedin_ditales');
+        return $user->can('delete_linkedin::ditales');
     }
 
     /**
@@ -52,7 +52,7 @@ class LinkedinDitalesPolicy
      */
     public function restore(User $user, LinkedinDitales $linkedinDitales): bool
     {
-        return $user->can('restore_linkedin_ditales');
+        return $user->can('restore_linkedin::ditales');
     }
 
     /**
