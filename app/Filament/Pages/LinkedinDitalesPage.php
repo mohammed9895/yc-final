@@ -20,7 +20,7 @@ class LinkedinDitalesPage extends Page implements HasForms
 
     protected static function shouldRegisterNavigation(): bool
     {
-        $booking_count = auth()->user()->bookings()->where('workshop_id', 55)->count();
+        $booking_count = auth()->user()->bookings()->where('workshop_id', 55)->where('status', 2)->count();
         if ($booking_count <= 0) {
             return false;
         }
