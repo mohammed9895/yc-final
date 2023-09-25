@@ -5,13 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LinkedinDitalesResource\Pages;
 use App\Filament\Resources\LinkedinDitalesResource\RelationManagers;
 use App\Models\LinkedinDitales;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LinkedinDitalesResource extends Resource
 {
@@ -23,7 +21,9 @@ class LinkedinDitalesResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name'),
+                TextInput::make('phone'),
+                TextInput::make('email'),
             ]);
     }
 
@@ -31,7 +31,9 @@ class LinkedinDitalesResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('phone'),
+                Tables\Columns\TextColumn::make('email'),
             ])
             ->filters([
                 //
@@ -43,14 +45,14 @@ class LinkedinDitalesResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -58,5 +60,5 @@ class LinkedinDitalesResource extends Resource
             'create' => Pages\CreateLinkedinDitales::route('/create'),
             'edit' => Pages\EditLinkedinDitales::route('/{record}/edit'),
         ];
-    }    
+    }
 }
