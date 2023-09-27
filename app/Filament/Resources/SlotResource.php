@@ -2,19 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\SlotResource\Pages;
+use App\Filament\Resources\SlotResource\RelationManagers;
+use App\Models\Slot;
+use App\Models\Workshop;
 use Carbon\Carbon;
 use Filament\Forms;
-use App\Models\Slot;
-use Filament\Tables;
-use App\Models\Workshop;
 use Filament\Resources\Form;
-use Filament\Resources\Table;
 use Filament\Resources\Resource;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\SlotResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use App\Filament\Resources\SlotResource\RelationManagers;
+use Filament\Resources\Table;
+use Filament\Tables;
 
 class SlotResource extends Resource
 {
@@ -23,19 +20,14 @@ class SlotResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    protected static function getNavigationGroup(): ?string
-    {
-        return   __('workshops');
-    }
-
     public static function getModelLabel(): string
     {
-        return   __('slots');
+        return __('slots');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return   __('slots');
+        return __('slots');
     }
 
     public static function form(Form $form): Form
@@ -45,25 +37,21 @@ class SlotResource extends Resource
                 Forms\Components\Select::make('workshop_id')
                     ->label(__('Workshop'))
                     ->options(Workshop::all()->pluck('title', 'id'))
-                    ->searchable()
-                    ->required(),
+                    ->searchable(),
                 Forms\Components\TextInput::make('name')
                     ->label(__('Name'))
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('start_date')
                     ->label(__('start_date'))
                     ->minDate(now()->today())
                     ->weekStartsOnSunday()
-                    ->reactive()
-                    ->required(),
+                    ->reactive(),
                 Forms\Components\DatePicker::make('end_date')
                     ->label(__('end_date'))
                     ->minDate(function (callable $get) {
                         return Carbon::parse($get('start_date'));
                     })
-                    ->weekStartsOnSunday()
-                    ->required(),
+                    ->weekStartsOnSunday(),
                 Forms\Components\TimePicker::make('start_time')
                     ->label(__('start_time'))
                     ->minDate(function (callable $get) {
@@ -73,11 +61,9 @@ class SlotResource extends Resource
                             return null;
                         }
                     })
-                    ->reactive()
-                    ->required(),
+                    ->reactive(),
                 Forms\Components\TimePicker::make('end_time')
                     ->label(__('end_time'))
-                    ->required()
                     ->minDate(function (callable $get) {
                         return Carbon::parse($get('start_time'));
                     }),
@@ -126,5 +112,10 @@ class SlotResource extends Resource
             'create' => Pages\CreateSlot::route('/create'),
             'edit' => Pages\EditSlot::route('/{record}/edit'),
         ];
+    }
+
+    protected static function getNavigationGroup(): ?string
+    {
+        return __('workshops');
     }
 }
