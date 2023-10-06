@@ -36,7 +36,8 @@
         "spatie/icalendar-generator": "^2.5",
         "spatie/laravel-translatable": "^6.4",
         "stijnvanouplines/blade-country-flags": "^1.0",
-        "wire-elements/modal": "^1.0"
+        "wire-elements/modal": "^1.0",
+        "wireui/wireui": "^1.17"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",

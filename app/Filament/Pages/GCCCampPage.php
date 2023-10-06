@@ -3,26 +3,26 @@
 namespace App\Filament\Pages;
 
 use App\Models\GCCCamp;
-use Filament\Pages\Page;
 use App\Notifications\SmsMessage;
-use Filament\Forms\Components\Grid;
-use Filament\Tables\Actions\Action;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Illuminate\Database\Eloquent\Builder;
 
 class GCCCampPage extends Page implements HasForms, HasTable
 {
-    use InteractsWithForms,  InteractsWithTable;
+    use InteractsWithForms, InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
@@ -30,19 +30,44 @@ class GCCCampPage extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.g-c-c-camp';
 
-    public function getTitle(): string
-    {
-        return   __('إستمارة المشاركة في مخيم الشباب الخليجي 2023');
-    }
-
     protected static function getNavigationLabel(): string
     {
-        return   __('إستمارة المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارة المشاركة في مخيم الشباب الخليجي 2023');
+    }
+
+    public function getTitle(): string
+    {
+        return __('إستمارة المشاركة في مخيم الشباب الخليجي 2023');
     }
 
     public function mount(): void
     {
         $this->form->fill();
+    }
+
+    public function register()
+    {
+        $orginal = $this->form->getState();
+        $orginal['user_id'] = auth()->id();
+        $booking = GCCCamp::create($orginal);
+        if ($booking) {
+            $sms = new SmsMessage;
+            if (auth()->user()->preferred_language == 'ar') {
+                $sms->to(auth()->user()->phone)
+                    ->message('شكراً لك، تم ارسال إستمارتك لطلب المشاركة في مخيم الشباب الخليجي 2023')
+                    ->lang(auth()->user()->preferred_language)
+                    ->send();
+            } else {
+                $sms->to(auth()->user()->phone)
+                    ->message('Thank you, your application has been sent to request participation in the Gulf Youth Camp')
+                    ->lang(auth()->user()->preferred_language)
+                    ->send();
+            }
+            return Notification::make()
+                ->title(__('Registered Successfuly'))
+                ->success()
+                ->send();
+        }
     }
 
     protected function getFormSchema(): array
@@ -78,18 +103,18 @@ class GCCCampPage extends Page implements HasForms, HasTable
                                 ->reactive()
                                 ->label('ربو أو نزلات شعبية أو ضيق في التنفس؟'),
                             TextInput::make('crisis_stage')
-                                ->required(fn (callable $get) => $get('has_respiratory_issues'))
+                                ->required(fn(callable $get) => $get('has_respiratory_issues'))
                                 ->label('إذا كان الجواب نعم الرجاء ذكر مرحلة الأزمة')
-                                ->visible(fn (callable $get) =>  $get('has_respiratory_issues')),
+                                ->visible(fn(callable $get) => $get('has_respiratory_issues')),
                             Checkbox::make('has_diabetes')
                                 ->label('مرض السكر ؟'),
                             Checkbox::make('has_head_injury')
                                 ->reactive()
                                 ->label('صراع أو نوبات إغماء أو صداع نصفي أو إصابة جسمية في الرأس؟'),
                             TextInput::make('head_injury_details')
-                                ->required(fn (callable $get) => $get('has_head_injury'))
+                                ->required(fn(callable $get) => $get('has_head_injury'))
                                 ->label('إذا كان الجواب نعم الرجاء ذكرالإصابة')
-                                ->visible(fn (callable $get) => $get('has_head_injury')),
+                                ->visible(fn(callable $get) => $get('has_head_injury')),
                             Checkbox::make('is_registered_disabled')
                                 ->label('هل أنت مسجل رسميا كصاحب احتياجات خاصة؟'),
                             Checkbox::make('has_bone_or_tendon_injury')
@@ -97,22 +122,22 @@ class GCCCampPage extends Page implements HasForms, HasTable
                                 ->label('كسور في العظام أو تمزق في الأربطة أو الوتر ؟'),
                             TextInput::make('bone_tendon_injury_details')
                                 ->label('إذا كان الجواب نعم الرجاء ذكرالإصابة')
-                                ->required(fn (callable $get) => $get('has_bone_or_tendon_injury'))
-                                ->visible(fn (callable $get) => $get('has_bone_or_tendon_injury')),
+                                ->required(fn(callable $get) => $get('has_bone_or_tendon_injury'))
+                                ->visible(fn(callable $get) => $get('has_bone_or_tendon_injury')),
                             Checkbox::make('has_infectious_disease')
                                 ->reactive()
                                 ->label('هل تعاني من أي مرض معدي أو تحمل مكروبات أمراض معدية ؟'),
                             TextInput::make('infectious_disease_details')
-                                ->required(fn (callable $get) => $get('has_infectious_disease'))
+                                ->required(fn(callable $get) => $get('has_infectious_disease'))
                                 ->label('إذا كان الجواب نعم الرجاء ذكرالمرض')
-                                ->visible(fn (callable $get) => $get('has_infectious_disease')),
+                                ->visible(fn(callable $get) => $get('has_infectious_disease')),
                             Checkbox::make('had_medical_treatment')
                                 ->reactive()
                                 ->label('هل سبق لك أن تلقيت علاجا من الطبيب أو أنك دخلت المستشفى خلال العام الأخير؟'),
                             TextInput::make('medical_treatment_details')
-                                ->required(fn (callable $get) => $get('had_medical_treatment'))
+                                ->required(fn(callable $get) => $get('had_medical_treatment'))
                                 ->label('إذا كان الجواب نعم الرجاء ذكرالسبب')
-                                ->visible(fn (callable $get) => $get('had_medical_treatment')),
+                                ->visible(fn(callable $get) => $get('had_medical_treatment')),
                             Select::make('blood_type')
                                 ->required()
                                 ->searchable()
@@ -224,30 +249,5 @@ class GCCCampPage extends Page implements HasForms, HasTable
                 ->color('danger')
                 ->requiresConfirmation(),
         ];
-    }
-
-    public function register()
-    {
-        $orginal = $this->form->getState();
-        $orginal['user_id'] = auth()->id();
-        $booking = GCCCamp::create($orginal);
-        if ($booking) {
-            $sms = new SmsMessage;
-            if (auth()->user()->preferred_language == 'ar') {
-                $sms->to(auth()->user()->phone)
-                    ->message('شكراً لك، تم ارسال إستمارتك لطلب المشاركة في مخيم الشباب الخليجي 2023')
-                    ->lang(auth()->user()->preferred_language)
-                    ->send();
-            } else {
-                $sms->to(auth()->user()->phone)
-                    ->message('Thank you, your application has been sent to request participation in the Gulf Youth Camp')
-                    ->lang(auth()->user()->preferred_language)
-                    ->send();
-            }
-            return Notification::make()
-                ->title(__('Registered Successfuly'))
-                ->success()
-                ->send();
-        }
     }
 }

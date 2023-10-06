@@ -98,6 +98,11 @@ class User extends Authenticatable implements HasAvatar
         return $this->hasMany(Talent::class);
     }
 
+    public function tamkeen()
+    {
+        return $this->hasMany(Tamkeen::class);
+    }
+
     public function workshops()
     {
         return $this->hasMany(Workshop::class);
