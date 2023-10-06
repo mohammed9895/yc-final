@@ -27,6 +27,11 @@ class TamkeenApplication extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.tamkeen-application';
 
+    protected static function getNavigationLabel(): string
+    {
+        return __('Tamkeen Application');
+    }
+
     public function getTitle(): string
     {
         return __('Tamkeen Application');
