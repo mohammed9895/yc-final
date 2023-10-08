@@ -7,6 +7,7 @@ use App\Filament\Resources\BookingResource\Pages;
 use App\Filament\Resources\BookingResource\RelationManagers;
 use App\Models\Booking;
 use App\Models\Place;
+use App\Models\Province;
 use App\Models\Slot;
 use App\Models\State;
 use App\Models\User;
@@ -91,10 +92,20 @@ class BookingResource extends Resource
                     ]),
                 Filter::make('state')
                     ->form([
+                        Select::make('province_id')
+                            ->options(Province::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn(callable $set) => $set('state_id', null)),
                         Select::make('state_id')
-                            ->relationship('user', 'state')
                             ->label(__('State'))
-                            ->options(State::all()->pluck('name', 'id'))
+                            ->options(function (callable $get) {
+                                $province = Province::find($get('province_id'));
+                                if (!$province) {
+                                    return State::all()->pluck('name', 'id');
+                                }
+                                return $province->state->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->multiple(),
                     ])
