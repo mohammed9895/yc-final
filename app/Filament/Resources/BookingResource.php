@@ -2,119 +2,47 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\BookingResource\Pages;
+use App\Filament\Resources\BookingResource\RelationManagers;
+use App\Models\Booking;
 use App\Models\Place;
+use App\Models\Slot;
 use App\Models\State;
+use App\Models\User;
+use App\Models\Workshop;
+use App\Notifications\SmsMessage;
 use Carbon\Carbon;
 use Filament\Forms;
-use App\Models\Slot;
-use App\Models\User;
-use Filament\Tables;
-use App\Models\Booking;
-use App\Models\Workshop;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
-use Filament\Resources\Table;
 use Filament\Resources\Resource;
-use App\Notifications\SmsMessage;
+use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Filters\Filter;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Config;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Columns\Layout\Panel;
-use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Filament\Resources\BookingResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use App\Filament\Resources\BookingResource\RelationManagers;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use Filament\Forms\Components\Select;
 
 class BookingResource extends Resource
 {
     // use HasPageShield;
-    public $answer;
     protected static ?string $model = Booking::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-collection';
-
+    public $answer;
     protected $listeners = ['downloadAnswerFile' => 'download'];
-
-    protected static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::where('status', 0)->count();
-    }
-
-    protected static function getNavigationGroup(): ?string
-    {
-        return   __('workshops');
-    }
-
-    protected function getDefaultTableSortColumn(): ?string
-    {
-        return 'created_at';
-    }
-
-    protected function getDefaultTableSortDirection(): ?string
-    {
-        return 'desc';
-    }
 
     public static function getModelLabel(): string
     {
-        return   __('bookings');
+        return __('bookings');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return   __('bookings');
-    }
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('workshop_id')->options(Workshop::all()->pluck('title', 'id'))->searchable()
-                    ->label(__('Workshop'))
-                    ->reactive()
-                    ->afterStateUpdated(fn (callable $set) => $set('slot_id', null))
-                    ->required(),
-                Forms\Components\Select::make('slot_id')
-                    ->label(__('slot'))
-                    ->options(function (callable $get) {
-                        $workshop = Workshop::find($get('workshop_id'));
-                        if (!$workshop) {
-                            return null;
-                        }
-                        return $workshop->slots->pluck('name', 'id');
-                    })
-                    ->searchable()
-                    ->label('Slot')
-                    ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->label(__('User'))
-                    ->options(User::all()->pluck('name', 'id'))
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $search) => User::where('email', 'like', "%{$search}%")->limit(10)->pluck('name', 'id'))
-                    ->label('User')
-                    ->required(),
-                Forms\Components\TextInput::make('reasone')
-                    ->label(__('reasone'))
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('status')->options([
-                    0 => 'Waiting',
-                    1 => 'Rejected',
-                    2 => 'Approvied'
-                ])->searchable()
-                    ->label(__('status'))
-                    ->required(),
-            ]);
+        return __('bookings');
     }
 
     public static function table(Table $table): Table
@@ -126,9 +54,10 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label(__('User'))
                     ->searchable()
-                    ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
+                    ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
-                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state
+                ): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('user.phone')
                     ->label(__('filament::users.phone'))
                     ->searchable(),
@@ -160,12 +89,26 @@ class BookingResource extends Resource
                         2 => __('Approvied'),
                         3 => __('canceled')
                     ]),
-                SelectFilter::make('user')
-                    ->relationship('user', 'state')
-                    ->label(__('State'))
-                    ->options(State::all()->pluck('name', 'id'))
-                ->searchable()
-                ->multiple(),
+                Filter::make('state')
+                    ->form([
+                        Select::make('state_id')
+                            ->relationship('user', 'state')
+                            ->label(__('State'))
+                            ->options(State::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->multiple(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['state_id'],
+                                function (Builder $query, $state): Builder {
+                                    return $query->whereHas('user', function ($query) use ($state) {
+                                        $query->where('state_id', $state);
+                                    });
+                                }
+                            );
+                    }),
                 Filter::make('workshop_id')
                     ->form([
                         Select::make('place_id')
@@ -173,7 +116,7 @@ class BookingResource extends Resource
                             ->options(Place::all()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn (callable $set) => $set('workshop_id', null)),
+                            ->afterStateUpdated(fn(callable $set) => $set('workshop_id', null)),
                         Select::make('workshop_id')
                             ->label(__('Workshop'))
                             ->options(function (callable $get) {
@@ -185,7 +128,7 @@ class BookingResource extends Resource
                             })
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn (callable $set) => $set('slot_id', null)),
+                            ->afterStateUpdated(fn(callable $set) => $set('slot_id', null)),
                         Select::make('slot_id')
                             ->label(__('slot'))
                             ->options(function (callable $get) {
@@ -209,11 +152,11 @@ class BookingResource extends Resource
                             )
                             ->when(
                                 $data['workshop_id'],
-                                fn (Builder $query, $date): Builder => $query->where('workshop_id', '=', $date),
+                                fn(Builder $query, $date): Builder => $query->where('workshop_id', '=', $date),
                             )
                             ->when(
                                 $data['slot_id'],
-                                fn (Builder $query, $date): Builder => $query->where('slot_id', '=', $date),
+                                fn(Builder $query, $date): Builder => $query->where('slot_id', '=', $date),
                             );
                     })
             ])
@@ -229,11 +172,11 @@ class BookingResource extends Resource
                         if ($user->preferred_language == 'ar') {
                             if ($data['type'] == 'default') {
                                 $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
+                                    ->message('أهلا بصديق المركز '.$user->name.' يسرنا إعلامك بقبولك في برنامج ('.$workshop->getTranslation('title',
+                                            'ar').'). نحن بانتظارك في ('.$slot['start_date'].') تبدأ الورشة ('.$slot['start_time'].')')
                                     ->lang($user->preferred_language)
                                     ->send();
-                            }
-                            else {
+                            } else {
                                 $sms->to($user->phone)
                                     ->message($data['message_ar'])
                                     ->lang($user->preferred_language)
@@ -242,11 +185,11 @@ class BookingResource extends Resource
                         } else {
                             if ($data['type'] == 'default') {
                                 $sms->to($user->phone)
-                                    ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
+                                    ->message('Hello friend '.$user->name.' We are pleased to inform you that you have been accepted into the ('.$workshop->getTranslation('title',
+                                            'en').') program. We are waiting for you on ('.$slot['start_date'].') The workshop begins ('.$slot['start_time'].')')
                                     ->lang($user->preferred_language)
                                     ->send();
-                            }
-                            else {
+                            } else {
                                 $sms->to($user->phone)
                                     ->message($data['message_en'])
                                     ->lang($user->preferred_language)
@@ -257,28 +200,28 @@ class BookingResource extends Resource
                     })
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->hidden(fn (Booking $record) => $record->status === 2)
+                    ->hidden(fn(Booking $record) => $record->status === 2)
                     ->form([
-                       Forms\Components\Radio::make('type')->label(__('Message Type'))->options([
-                           'default' => 'Default',
-                           'custom' => 'Custom',
-                       ])
-                        ->reactive()
-                        ->required(),
+                        Forms\Components\Radio::make('type')->label(__('Message Type'))->options([
+                            'default' => 'Default',
+                            'custom' => 'Custom',
+                        ])
+                            ->reactive()
+                            ->required(),
                         Forms\Components\Textarea::make('message_ar')
                             ->required()
                             ->visible(function (callable $get) {
-                                if ($get('type') == 'custom'){
+                                if ($get('type') == 'custom') {
                                     return true;
                                 }
                             }),
                         Forms\Components\Textarea::make('message_en')
                             ->required()
                             ->visible(function (callable $get) {
-                            if ($get('type') == 'custom'){
-                                return true;
-                            }
-                        }),
+                                if ($get('type') == 'custom') {
+                                    return true;
+                                }
+                            }),
                     ]),
 
                 Action::make('reject')->action('reject')
@@ -291,38 +234,43 @@ class BookingResource extends Resource
                         $sms = new SmsMessage;
 
 
-
                         if ($user->preferred_language == 'en') {
                             if ($data['rejection_reason'] == 'full') {
                                 $sms->to($user->phone)
-                                    ->message('Hello friend ' . $user->name . ' Thank you for registering in the (' . $workshop->getTranslation('title', 'en') . ') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
+                                    ->message('Hello friend '.$user->name.' Thank you for registering in the ('.$workshop->getTranslation('title',
+                                            'en').') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
                                     ->lang($user->preferred_language)
                                     ->send();
                             } else {
                                 $sms->to($user->phone)
-                                    ->message('Welcome, ' . $user->name . '. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the (' . $workshop->getTranslation('title', 'en') . ') program.')
+                                    ->message('Welcome, '.$user->name.'. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the ('.$workshop->getTranslation('title',
+                                            'en').') program.')
                                     ->lang($user->preferred_language)
                                     ->send();
                             }
                         } else {
                             if ($data['rejection_reason'] == 'full') {
                                 $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
+                                    ->message('أهلا بصديق المركز '.$user->name.' شكرً لتسجيلك في برنامج ('.$workshop->getTranslation('title',
+                                            'ar').'). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
                                     ->lang($user->preferred_language)
                                     ->send();
                             } else {
                                 $sms->to($user->phone)
-                                    ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
+                                    ->message('أهلا بصديق المركز '.$user->name.' شكرً لتسجيلك في برنامج ('.$workshop->getTranslation('title',
+                                            'ar').'). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
                                     ->lang($user->preferred_language)
                                     ->send();
                             }
                         }
 
-                        Booking::where('id', $record->id)->update(['status' => 1, 'rejection_message' => $data['rejection_reason']]);
+                        Booking::where('id', $record->id)->update([
+                            'status' => 1, 'rejection_message' => $data['rejection_reason']
+                        ]);
                     })
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->hidden(fn (Booking $record) => $record->status === 1)
+                    ->hidden(fn(Booking $record) => $record->status === 1)
                     ->form([
                         Select::make('rejection_reason')->required()
                             ->label(__('rejection_reason'))
@@ -342,12 +290,13 @@ class BookingResource extends Resource
 
                         if ($user->preferred_language == 'ar') {
                             $sms->to($user->phone)
-                                ->message('تم الغاء حجزك في  ' . $workshop->getTranslation('title', 'ar'))
+                                ->message('تم الغاء حجزك في  '.$workshop->getTranslation('title', 'ar'))
                                 ->lang($user->preferred_language)
                                 ->send();
                         } else {
                             $sms->to($user->phone)
-                                ->message('Your reservation for ' . $workshop->getTranslation('title', 'en') . ' has been canceled')
+                                ->message('Your reservation for '.$workshop->getTranslation('title',
+                                        'en').' has been canceled')
                                 ->lang($user->preferred_language)
                                 ->send();
                         }
@@ -355,14 +304,14 @@ class BookingResource extends Resource
                     })
                     ->icon('heroicon-o-trash')
                     ->color('danger')
-                    ->hidden(fn (Booking $record) => $record->status === 3),
+                    ->hidden(fn(Booking $record) => $record->status === 3),
                 Action::make('show_answers')
-                    ->action(function(Booking $record, array $data) {
+                    ->action(function (Booking $record, array $data) {
 
                     })
                     ->color('warning')
-                    ->modalContent(fn ($record) => view('filament.custom.answers', ['record'=> $record]))
-                    ->hidden(fn (Booking $record) => $record->answers === [])
+                    ->modalContent(fn($record) => view('filament.custom.answers', ['record' => $record]))
+                    ->hidden(fn(Booking $record) => $record->answers === [])
             ])
             ->bulkActions([
                 BulkAction::make('approve')
@@ -377,11 +326,11 @@ class BookingResource extends Resource
                             if ($user->preferred_language == 'ar') {
                                 if ($data['type'] == 'default') {
                                     $sms->to($user->phone)
-                                        ->message('أهلا بصديق المركز ' . $user->name . ' يسرنا إعلامك بقبولك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نحن بانتظارك في (' . $slot['start_date'] . ') تبدأ الورشة (' . $slot['start_time'] . ')')
+                                        ->message('أهلا بصديق المركز '.$user->name.' يسرنا إعلامك بقبولك في برنامج ('.$workshop->getTranslation('title',
+                                                'ar').'). نحن بانتظارك في ('.$slot['start_date'].') تبدأ الورشة ('.$slot['start_time'].')')
                                         ->lang('ar')
                                         ->send();
-                                }
-                                else {
+                                } else {
                                     $sms->to($user->phone)
                                         ->message($data['message_ar'])
                                         ->lang('ar')
@@ -390,11 +339,11 @@ class BookingResource extends Resource
                             } else {
                                 if ($data['type'] == 'default') {
                                     $sms->to($user->phone)
-                                        ->message('Hello friend ' . $user->name . ' We are pleased to inform you that you have been accepted into the (' . $workshop->getTranslation('title', 'en') . ') program. We are waiting for you on (' . $slot['start_date'] . ') The workshop begins (' . $slot['start_time'] . ')')
+                                        ->message('Hello friend '.$user->name.' We are pleased to inform you that you have been accepted into the ('.$workshop->getTranslation('title',
+                                                'en').') program. We are waiting for you on ('.$slot['start_date'].') The workshop begins ('.$slot['start_time'].')')
                                         ->lang('en')
                                         ->send();
-                                }
-                                else {
+                                } else {
                                     $sms->to($user->phone)
                                         ->message($data['message_en'])
                                         ->lang('en')
@@ -418,14 +367,14 @@ class BookingResource extends Resource
                         Forms\Components\Textarea::make('message_ar')
                             ->required()
                             ->visible(function (callable $get) {
-                                if ($get('type') == 'custom'){
+                                if ($get('type') == 'custom') {
                                     return true;
                                 }
                             }),
                         Forms\Components\Textarea::make('message_en')
                             ->required()
                             ->visible(function (callable $get) {
-                                if ($get('type') == 'custom'){
+                                if ($get('type') == 'custom') {
                                     return true;
                                 }
                             }),
@@ -442,24 +391,28 @@ class BookingResource extends Resource
                             if ($user->preferred_language == 'en') {
                                 if ($data['rejection_reason'] == 'full') {
                                     $sms->to($user->phone)
-                                        ->message('Hello friend ' . $user->name . ' Thank you for registering in the (' . $workshop->getTranslation('title', 'en') . ') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
+                                        ->message('Hello friend '.$user->name.' Thank you for registering in the ('.$workshop->getTranslation('title',
+                                                'en').') program. We apologize for not accepting you among the participants due to the wide demand for registration and the completion of the specified number of the program. See you soon on our next shows.')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 } else {
                                     $sms->to($user->phone)
-                                        ->message('Welcome, ' . $user->name . '. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the (' . $workshop->getTranslation('title', 'en') . ') program.')
+                                        ->message('Welcome, '.$user->name.'. Since you did not meet the admission requirements, we regret to inform you that you were not accepted into the ('.$workshop->getTranslation('title',
+                                                'en').') program.')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 }
                             } else {
                                 if ($data['rejection_reason'] == 'full') {
                                     $sms->to($user->phone)
-                                        ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
+                                        ->message('أهلا بصديق المركز '.$user->name.' شكرً لتسجيلك في برنامج ('.$workshop->getTranslation('title',
+                                                'ar').'). نعتذر لك لعدم قبولك ضمن المشاركين فيها نظرا للإقبال الواسع في التسجيل و اكتمال العدد المحدد للبرنامج. نراك قريبًا في برامجنا القادمة.')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 } else {
                                     $sms->to($user->phone)
-                                        ->message('أهلا بصديق المركز ' . $user->name . ' شكرً لتسجيلك في برنامج (' . $workshop->getTranslation('title', 'ar') . '). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
+                                        ->message('أهلا بصديق المركز '.$user->name.' شكرً لتسجيلك في برنامج ('.$workshop->getTranslation('title',
+                                                'ar').'). نظرا لعدم استيفائك لشروط القبول يؤسِفنا إبلاغك بعدم قبولك في برنامج')
                                         ->lang($user->preferred_language)
                                         ->send();
                                 }
@@ -483,6 +436,50 @@ class BookingResource extends Resource
             ]);
     }
 
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Select::make('workshop_id')->options(Workshop::all()->pluck('title',
+                    'id'))->searchable()
+                    ->label(__('Workshop'))
+                    ->reactive()
+                    ->afterStateUpdated(fn(callable $set) => $set('slot_id', null))
+                    ->required(),
+                Forms\Components\Select::make('slot_id')
+                    ->label(__('slot'))
+                    ->options(function (callable $get) {
+                        $workshop = Workshop::find($get('workshop_id'));
+                        if (!$workshop) {
+                            return null;
+                        }
+                        return $workshop->slots->pluck('name', 'id');
+                    })
+                    ->searchable()
+                    ->label('Slot')
+                    ->required(),
+                Forms\Components\Select::make('user_id')
+                    ->label(__('User'))
+                    ->options(User::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->getSearchResultsUsing(fn(string $search) => User::where('email', 'like',
+                        "%{$search}%")->limit(10)->pluck('name', 'id'))
+                    ->label('User')
+                    ->required(),
+                Forms\Components\TextInput::make('reasone')
+                    ->label(__('reasone'))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('status')->options([
+                    0 => 'Waiting',
+                    1 => 'Rejected',
+                    2 => 'Approvied'
+                ])->searchable()
+                    ->label(__('status'))
+                    ->required(),
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -498,7 +495,29 @@ class BookingResource extends Resource
             'edit' => Pages\EditBooking::route('/{record}/edit'),
         ];
     }
-    public function download() {
-       ray('test');
+
+    protected static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', 0)->count();
+    }
+
+    protected static function getNavigationGroup(): ?string
+    {
+        return __('workshops');
+    }
+
+    public function download()
+    {
+        ray('test');
+    }
+
+    protected function getDefaultTableSortColumn(): ?string
+    {
+        return 'created_at';
+    }
+
+    protected function getDefaultTableSortDirection(): ?string
+    {
+        return 'desc';
     }
 }
