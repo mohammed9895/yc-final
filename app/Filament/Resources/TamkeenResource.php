@@ -7,11 +7,13 @@ use App\Filament\Resources\TamkeenResource\Pages;
 use App\Filament\Resources\TamkeenResource\RelationManagers;
 use App\Models\Tamkeen;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 
 class TamkeenResource extends Resource
 {
@@ -94,6 +96,12 @@ class TamkeenResource extends Resource
                     ->searchable()
                     ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('user.email')->label(__('email')),
+                Tables\Columns\TextColumn::make('user.phone')->label(__('phone')),
+                Tables\Columns\TextColumn::make('user.province.name')->label(__('province')),
+                Tables\Columns\TextColumn::make('user.state.name')->label(__('state')),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state
+                ): string => Carbon::parse($state)->age),
 //                Tables\Columns\TagsColumn::make('social_media_accounts'),
                 Tables\Columns\TextColumn::make('linkedin_account'),
                 Tables\Columns\TextColumn::make('skill'),
