@@ -244,7 +244,6 @@ class BookingResource extends Resource
 
                         $sms = new SmsMessage;
 
-
                         if ($user->preferred_language == 'en') {
                             if ($data['rejection_reason'] == 'full') {
                                 $sms->to($user->phone)

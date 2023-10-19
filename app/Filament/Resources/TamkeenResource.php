@@ -7,13 +7,17 @@ use App\Filament\Resources\TamkeenResource\Pages;
 use App\Filament\Resources\TamkeenResource\RelationManagers;
 use App\Models\Tamkeen;
 use App\Models\User;
+use App\Notifications\SmsMessage;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Collection;
 
 class TamkeenResource extends Resource
 {
@@ -153,9 +157,54 @@ class TamkeenResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('Approve')
+                    ->label(__('Approve'))
+                    ->action('approve')
+                    ->action(function (Tamkeen $record, array $data) {
+                        $user = User::where('id', $record->user_id)->first();
+
+                        $sms = new SmsMessage;
+
+                        if ($user->preferred_language == 'ar') {
+                            $sms->to($user->phone)
+                                ->message('عزيزنا المسجل تم قبولك في برنامج تمكّن ،
+ننتظرك في أول ورشة تعريفية بتاريخ  23 أكتوبر ( عبر منصة الزوم)  ، وذلك في تمام  الساعة ٤:٠٠ مساءً  .')
+                                ->lang($user->preferred_language)
+                                ->send();
+                        } else {
+                            $sms->to($user->phone)
+                                ->message('Dear participant, We are delighted to inform you that you have been accepted in Tamakon program. We look forward to seeing you at the orientation workshop on 23 October (via Zoom) at 4:00 PM.')
+                                ->lang($user->preferred_language)
+                                ->send();
+                        }
+                    })
+                    ->icon('heroicon-o-trash')
+                    ->color('success'),
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export'),
+                BulkAction::make('approve')
+                    ->label(__('Approve'))
+                    ->action(function (Collection $records, array $data) {
+                        $sms = new SmsMessage;
+                        foreach ($records as $record) {
+                            $user = User::where('id', $record->user_id)->first();
+                            if ($user->preferred_language == 'ar') {
+                                $sms->to($user->phone)
+                                    ->message('عزيزنا المسجل تم قبولك في برنامج تمكّن ،
+ننتظرك في أول ورشة تعريفية بتاريخ  23 أكتوبر ( عبر منصة الزوم)  ، وذلك في تمام  الساعة ٤:٠٠ مساءً  .')
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            } else {
+                                $sms->to($user->phone)
+                                    ->message('Dear participant, We are delighted to inform you that you have been accepted in Tamakon program. We look forward to seeing you at the orientation workshop on 23 October (via Zoom) at 4:00 PM.')
+                                    ->lang($user->preferred_language)
+                                    ->send();
+                            }
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion()
+                    ->color('success'),
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
