@@ -2,28 +2,27 @@
 
 namespace App\Http\Livewire\User;
 
-use Carbon\Carbon;
-use Illuminate\Support\Str;
-use Livewire\Event;
+use App\Models\Attendees;
+use App\Models\Booking;
+use App\Models\Evaluate;
 use App\Models\Slot;
 use App\Models\User;
-use App\Models\Booking;
-use Livewire\Component;
-use App\Models\Evaluate;
 use App\Models\Workshop;
-use App\Models\Attendees;
-use setasign\Fpdi\Tfpdf\Fpdi;
 use App\Notifications\SmsMessage;
-use Filament\Tables\Actions\Action;
-use Illuminate\Support\Facades\Auth;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Contracts\HasTable;
-use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 use Filament\Notifications\Notification;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\BadgeColumn;
-use Illuminate\Support\Facades\Response;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use setasign\Fpdi\Tfpdf\Fpdi;
 
 
 class MyBookings extends Component implements HasTable
@@ -39,10 +38,103 @@ class MyBookings extends Component implements HasTable
     {
     }
 
+    public function downloadCert()
+    {
+        $workshop = $this->workshop_id;
+        $slot = $this->slot_id;
+        $user = Auth::id();
+        $slots_dates = Slot::select('start_date', 'end_date')->where('id', $slot)->first();
+
+        $slot_start_date = Carbon::parse($slots_dates->start_date);
+        $slot_end_date = Carbon::parse($slots_dates->end_date);
+        $slot_days_count = $slot_start_date->diffInDays($slot_end_date);
+
+        $workshop_info = Workshop::where('id', $workshop)->first();
+
+        $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance',
+            1)->count();
+
+//        if ($workshop_info->days === $present_attendees) {
+
+        $outputFile = Storage::disk('local')->path("\/certificates/".auth()->user()->name.".pdf");
+
+        $text = [
+            auth()->user()->name,
+            $workshop_info->title,
+            'من تاريخ '.$slots_dates->start_date.' الى '.$slots_dates->end_date,
+        ];
+        $this->fillPDF(Storage::disk('local')->path('/certificates/cert.pdf'), $outputFile, $text);
+
+        //output to browser
+        $headers = array(
+            'Content-Type: application/pdf',
+        );
+
+
+        $filename = str_ireplace(array(
+                '\'', '"',
+                ',', ';', '<', '>'
+            ), '', Str::kebab($workshop_info->title)).'-certificate.pdf';
+        Notification::make()
+            ->title('Certificate downloaded successfully')
+            ->success()
+            ->send();
+        return Response::download($outputFile, $filename, $headers);
+//        }
+//        else {
+//            Notification::make()
+//                ->title('You are not eligible for certificate')
+//                ->danger()
+//                ->send();
+//        }
+
+    }
+
+    public function fillPDF($file, $outputFile, $text)
+    {
+        $fpdi = new Fpdi();
+        // merger operations
+        $fpdi->addFont('NeoSansArabic', 'M', 'NeoSansArabicMedium.ttf', true);
+        // $fpdi->addFont('NeoSansArabic', 'M', 'NeoSansArabicMedium.php', true);
+        $count = $fpdi->setSourceFile($file);
+        for ($i = 1; $i <= $count; $i++) {
+            $template = $fpdi->importPage($i);
+            $size = $fpdi->getTemplateSize($template);
+            $fpdi->AddPage($size['orientation'], array($size['width'], $size['height']));
+            $fpdi->useTemplate($template);
+
+            $fpdi->SetFont("NeoSansArabic", "M", 18, '', true);
+            $fpdi->SetTextColor(59, 87, 167);
+            $fpdi->SetY(107);
+            $Arabic = new \ArPHP\I18N\Arabic();
+            $name_str = $Arabic->utf8Glyphs($text[0]);
+            $fpdi->Cell(0, 0, $name_str, 0, 0, 'C');
+
+            $fpdi->SetFont("NeoSansArabic", "M", 18);
+            $fpdi->SetTextColor(59, 87, 167);
+            $fpdi->SetY(132);
+            $workshop_str = $Arabic->utf8Glyphs($text[1]);
+            $fpdi->Cell(0, 0, $workshop_str, 0, 0, 'C');
+
+            $fpdi->SetFont("NeoSansArabic", "M", 18);
+            $fpdi->SetTextColor(96, 97, 97);
+            $fpdi->SetY(155);
+            $dates_str = $Arabic->utf8Glyphs($text[2]);
+            $fpdi->Cell(0, 0, $dates_str, 0, 0, 'C');
+        }
+        return $fpdi->Output($outputFile, 'F');
+    }
+
+    public function render()
+    {
+        return view('livewire.user.my-bookings');
+    }
+
     protected function getTableQuery(): Builder
     {
         return Booking::query()->where('user_id', '=', Auth::id());
     }
+
     protected function getTableColumns(): array
     {
         return [
@@ -56,9 +148,9 @@ class MyBookings extends Component implements HasTable
                     3 => __('canceled'),
                 ])
                 ->colors([
-                    'warning' => static fn ($state): bool => $state === 0,
-                    'success' => static fn ($state): bool => $state === 2,
-                    'danger' => static fn ($state): bool => $state === 1,
+                    'warning' => static fn($state): bool => $state === 0,
+                    'success' => static fn($state): bool => $state === 2,
+                    'danger' => static fn($state): bool => $state === 1,
                 ]),
             TextColumn::make('slot.start_date')
                 ->label(__('start_date'))
@@ -98,7 +190,8 @@ class MyBookings extends Component implements HasTable
 //                        $slot_days_count = 1;
 //                    }
 
-                    $evaluations = Evaluate::where('user_id', Auth::id(),)->where('workshop_id', $record->workshop_id)->get();
+                    $evaluations = Evaluate::where('user_id', Auth::id(),)->where('workshop_id',
+                        $record->workshop_id)->get();
                     if (count($evaluations) === 0) {
                         $this->emit('openModal', 'user.evaluate-model', ['booking' => $record]);
                     } else {
@@ -110,7 +203,7 @@ class MyBookings extends Component implements HasTable
                         ->danger()
                         ->send();
                 }
-            })->visible(fn (Booking $record) => $record->status == 2),
+            })->visible(fn(Booking $record) => $record->status == 2),
             Action::make('cancel')
                 ->label(__('cancel'))
                 ->action('cancel')
@@ -122,12 +215,12 @@ class MyBookings extends Component implements HasTable
 
                     if ($user->preferred_language == 'ar') {
                         $sms->to($user->phone)
-                            ->message('تم الغاء حجزك في  ' . $workshop->title)
+                            ->message('تم الغاء حجزك في  '.$workshop->title)
                             ->lang($user->preferred_language)
                             ->send();
                     } else {
                         $sms->to($user->phone)
-                            ->message('Your reservation for ' . $workshop->title . ' has been canceled')
+                            ->message('Your reservation for '.$workshop->title.' has been canceled')
                             ->lang($user->preferred_language)
                             ->send();
                     }
@@ -135,102 +228,12 @@ class MyBookings extends Component implements HasTable
                 })
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->hidden(fn (Booking $record) => $record->status === 3),
+                ->hidden(fn(Booking $record) => $record->status === 3),
         ];
     }
 
     protected function getTableBulkActions(): array
     {
         return [];
-    }
-
-    public function downloadCert()
-    {
-        $workshop   = $this->workshop_id;
-        $slot       = $this->slot_id;
-        $user       = Auth::id();
-        $slots_dates = Slot::select('start_date', 'end_date')->where('id', $slot)->first();
-
-        $slot_start_date = Carbon::parse($slots_dates->start_date);
-        $slot_end_date = Carbon::parse($slots_dates->end_date);
-        $slot_days_count = $slot_start_date->diffInDays($slot_end_date);
-
-        $workshop_info = Workshop::where('id', $workshop)->first();
-
-        $present_attendees = Attendees::where('slot_id', $slot)->where('user_id', $user)->where('attendance', 1)->count();
-
-//        if ($workshop_info->days === $present_attendees) {
-
-            $outputFile = Storage::disk('local')->path("\/certificates/" . auth()->user()->name . ".pdf");
-
-            $text = [
-                auth()->user()->name,
-                $workshop_info->title,
-                'من تاريخ ' . $slots_dates->start_date . ' الى ' . $slots_dates->end_date,
-            ];
-            $this->fillPDF(Storage::disk('local')->path('/certificates/cert.pdf'), $outputFile, $text);
-
-            //output to browser
-            $headers = array(
-                'Content-Type: application/pdf',
-            );
-
-
-            $filename = str_ireplace(array('\'', '"',
-                    ',', ';', '<', '>'), '', Str::kebab($workshop_info->title)) . '-certificate.pdf';
-            Notification::make()
-                ->title('Certificate downloaded successfully')
-                ->success()
-                ->send();
-            return Response::download($outputFile, $filename, $headers);
-//        }
-//        else {
-//            Notification::make()
-//                ->title('You are not eligible for certificate')
-//                ->danger()
-//                ->send();
-//        }
-
-    }
-
-
-    public function fillPDF($file, $outputFile, $text)
-    {
-        $fpdi = new Fpdi();
-        // merger operations
-        $fpdi->addFont('NeoSansArabic', 'M', 'NeoSansArabicMedium.ttf', true);
-        // $fpdi->addFont('NeoSansArabic', 'M', 'NeoSansArabicMedium.php', true);
-        $count = $fpdi->setSourceFile($file);
-        for ($i = 1; $i <= $count; $i++) {
-            $template   = $fpdi->importPage($i);
-            $size       = $fpdi->getTemplateSize($template);
-            $fpdi->AddPage($size['orientation'], array($size['width'], $size['height']));
-            $fpdi->useTemplate($template);
-
-            $fpdi->SetFont("NeoSansArabic", "M", 18, '', true);
-            $fpdi->SetTextColor(59, 87, 167);
-            $fpdi->SetY(146);
-            $Arabic = new \ArPHP\I18N\Arabic();
-            $name_str = $Arabic->utf8Glyphs($text[0]);
-            $fpdi->Cell(0, 0, $name_str, 0, 0, 'C');
-
-            $fpdi->SetFont("NeoSansArabic", "M", 18);
-            $fpdi->SetTextColor(59, 87, 167);
-            $fpdi->SetY(171);
-            $workshop_str = $Arabic->utf8Glyphs($text[1]);
-            $fpdi->Cell(0, 0, $workshop_str, 0, 0, 'C');
-
-            $fpdi->SetFont("NeoSansArabic", "M", 18);
-            $fpdi->SetTextColor(59, 87, 167);
-            $fpdi->SetY(197);
-            $dates_str = $Arabic->utf8Glyphs($text[2]);
-            $fpdi->Cell(0, 0, $dates_str, 0, 0, 'C');
-        }
-        return $fpdi->Output($outputFile, 'F');
-    }
-
-    public function render()
-    {
-        return view('livewire.user.my-bookings');
     }
 }
