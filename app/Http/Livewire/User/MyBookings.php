@@ -116,7 +116,7 @@ class MyBookings extends Component implements HasTable
             $workshop_str = $Arabic->utf8Glyphs($text[1]);
             $fpdi->Cell(0, 0, $workshop_str, 0, 0, 'C');
 
-            $fpdi->SetFont("NeoSansArabic", "N", 18);
+            $fpdi->SetFont("NeoSansArabic", "M", 18);
             $fpdi->SetTextColor(96, 97, 97);
             $fpdi->SetY(159);
             $dates_str = $Arabic->utf8Glyphs($text[2]);
