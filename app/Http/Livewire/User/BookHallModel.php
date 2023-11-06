@@ -155,8 +155,6 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             $nextSlot = Carbon::createFromFormat('h:i A', $this->slots[$i + 1]);
             $difference = $currentSlot->diffInMinutes($nextSlot);
 
-            ray("Comparing {$this->slots[$i]} and {$this->slots[$i + 1]}: Difference is {$difference} minutes");
-
             if ($difference != 30) {
                 session()->flash('error', __('The selected slots are not consecutive!'));
                 $this->slots = [];
