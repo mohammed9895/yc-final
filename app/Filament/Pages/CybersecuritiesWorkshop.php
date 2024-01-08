@@ -30,26 +30,34 @@ class CybersecuritiesWorkshop extends Page implements HasForms
 
     public function register()
     {
-        $orginal = $this->form->getState();
-        $orginal['user_id'] = auth()->id();
-        $booking = Cybersecurity::create($orginal);
-        if ($booking) {
-            $sms = new SmsMessage;
-            if (auth()->user()->preferred_language == 'ar') {
-                $sms->to(auth()->user()->phone)
-                    ->message('شكراً لك، تم ارسال إستمارتك لطلب المشاركة في في ورشة الإمن السيبراني')
-                    ->lang(auth()->user()->preferred_language)
-                    ->send();
-            } else {
-                $sms->to(auth()->user()->phone)
-                    ->message('Thank you, your application has been sent to request participation in Cybersecurity workshop')
-                    ->lang(auth()->user()->preferred_language)
-                    ->send();
-            }
+        $registrationCount = Cybersecurity::where('user_id', '=', auth()->id())->count();
+        if ($registrationCount > 0) {
             return Notification::make()
-                ->title(__('Registered Successfuly'))
+                ->title(__('Already Registered'))
                 ->success()
                 ->send();
+        } else {
+            $orginal = $this->form->getState();
+            $orginal['user_id'] = auth()->id();
+            $booking = Cybersecurity::create($orginal);
+            if ($booking) {
+                $sms = new SmsMessage;
+                if (auth()->user()->preferred_language == 'ar') {
+                    $sms->to(auth()->user()->phone)
+                        ->message('شكراً لك، تم ارسال إستمارتك لطلب المشاركة في ورشة الإمن السيبراني')
+                        ->lang(auth()->user()->preferred_language)
+                        ->send();
+                } else {
+                    $sms->to(auth()->user()->phone)
+                        ->message('Thank you, your application has been sent to request participation in Cybersecurity workshop')
+                        ->lang(auth()->user()->preferred_language)
+                        ->send();
+                }
+                return Notification::make()
+                    ->title(__('Registered Successfuly'))
+                    ->success()
+                    ->send();
+            }
         }
     }
 
