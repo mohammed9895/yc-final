@@ -7,7 +7,7 @@
         <table class="border-collapse border border-slate-400 dark:bg-gray-900 bg-white w-full">
             <thead>
             <th class="border border-slate-300 p-3">التاريخ</th>
-            <th class="border border-slate-300 p-3">من</th>
+            <th class="border border-slate-300 p-3">الفعالية</th>
             </thead>
             <tbody>
             <tr>
@@ -68,7 +68,7 @@
             </tr>
             </tbody>
         </table>
-        <p class="font-bold">15 qualified individuals will be selected to conduct live shooting in Mutrah on the 27th of
+        <p class="font-bold">15 qualified individuals will be selected to conduct live shooting in Mutrah on the 26th of
             January from 14:30 to 18:00.
         </p>
     @endif
