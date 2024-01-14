@@ -23,8 +23,8 @@
                 <td class="border border-slate-300 p-2">اختيار المتأهلين والإعلان عنهم</td>
             </tr>
             <tr>
-                <td class="border border-slate-300 p-2">27 يناير</td>
-                <td class="border border-slate-300 p-2">إعلان عن المسابقةجولة التصوير في مطرح</td>
+                <td class="border border-slate-300 p-2">26 يناير</td>
+                <td class="border border-slate-300 p-2">جولة التصوير في مطرح</td>
             </tr>
             <tr>
                 <td class="border border-slate-300 p-2">31 يناير</td>
@@ -32,8 +32,8 @@
             </tr>
             </tbody>
         </table>
-        <p class="font-bold">تم اختيار 15 متأهل للقيام بالتصوير الحي في مطرح بتاريخ 27 من الساعة 2:30 الى 6
-            مساءً</p>
+        <p class="font-bold">سيتم اختيار 15 متاهل للقيام بالتصوير الحي في مطرح بتاريخ 26 يوم الجمعة من الساعة 2:30 الى 6
+            مساءاً</p>
     @else
         <p>
             Youth Center and Kimji Ramdas Group, in collaboration with Nikon, are pleased to announce the launch of the
@@ -59,7 +59,7 @@
                 <td class="border border-slate-300 p-2">Selection of qualifiers and results announcement</td>
             </tr>
             <tr>
-                <td class="border border-slate-300 p-2">27 January</td>
+                <td class="border border-slate-300 p-2">26 January</td>
                 <td class="border border-slate-300 p-2">Photography tour in Mutrah</td>
             </tr>
             <tr>
