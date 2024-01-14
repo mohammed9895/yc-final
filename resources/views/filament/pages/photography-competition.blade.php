@@ -4,7 +4,7 @@
             يسر مركز الشباب و مجموعة كيمجي رامداس بالتعاون مع نيكون عن إطلاق مسابقة منظرة عمانية بنسختها الثانية.
         </p>
         <p><span class="font-bold">مدة المسابقة :</span> من ١٤ يناير إلى ٣١ يناير</p>
-        <table class="border-collapse border border-slate-400 bg-white w-full">
+        <table class="border-collapse border border-slate-400 dark:bg-gray-900 bg-white w-full">
             <thead>
             <th class="border border-slate-300 p-3">التاريخ</th>
             <th class="border border-slate-300 p-3">من</th>
@@ -40,7 +40,7 @@
             second edition of Omani Mirror Photography Contest.
         </p>
         <p><span class="font-bold"><span class="font-bold">Contest Duration:</span> January 14th  to 31st</p>
-        <table class="border-collapse border border-slate-400 bg-white w-full">
+        <table class="border-collapse border border-slate-400 bg-white dark:bg-gray-900 w-full">
             <thead>
             <th class="border border-slate-300 p-3">Date</th>
             <th class="border border-slate-300 p-3">Event</th>
