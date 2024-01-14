@@ -61,7 +61,7 @@ class PhotographyCompetition extends Page implements HasForms
     protected function getFormSchema(): array
     {
         return [
-            FileUpload::make('images')->multiple()->image(),
+            FileUpload::make('images')->multiple()->image()->required(),
         ];
     }
 }
