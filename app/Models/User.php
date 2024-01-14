@@ -128,6 +128,11 @@ class User extends Authenticatable implements HasAvatar
         return $this->hasMany(Cybersecurity::class);
     }
 
+    public function photographyCompetition()
+    {
+        return $this->hasMany(PhotographyCompetition::class);
+    }
+
     public function hasVerifiedPhone()
     {
         return !is_null($this->phone_verified_at);

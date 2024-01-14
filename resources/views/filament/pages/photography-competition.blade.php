@@ -2,6 +2,7 @@
     @if(app()->currentLocale() == 'ar')
         <p>
             يسر مركز الشباب و مجموعة كيمجي رامداس بالتعاون مع نيكون عن إطلاق مسابقة منظرة عمانية بنسختها الثانية.
+            بمناسبه تولي حضره صاحب الجلاله السلطان هيثم بن طارق مقاليد الحكم .
         </p>
         <p><span class="font-bold">مدة المسابقة :</span> من ١٤ يناير إلى ٣١ يناير</p>
         <table class="border-collapse border border-slate-400 dark:bg-gray-900 bg-white w-full">
@@ -15,7 +16,7 @@
                 <td class="border border-slate-300 p-2">إعلان عن المسابقة</td>
             </tr>
             <tr>
-                <td class="border border-slate-300 p-2">22 يناير</td>
+                <td class="border border-slate-300 p-2">18 يناير</td>
                 <td class="border border-slate-300 p-2">إغلاق المشاركة</td>
             </tr>
             <tr>
@@ -37,7 +38,8 @@
     @else
         <p>
             Youth Center and Kimji Ramdas Group, in collaboration with Nikon, are pleased to announce the launch of the
-            second edition of Omani Mirror Photography Contest.
+            second edition of Omani Mirror Photography Contest.On the occasion of His Majesty Sultan Haitham bin Tariq
+            assuming the reins of power
         </p>
         <p><span class="font-bold"><span class="font-bold">Contest Duration:</span> January 14th  to 31st</p>
         <table class="border-collapse border border-slate-400 bg-white dark:bg-gray-900 w-full">
@@ -51,7 +53,7 @@
                 <td class="border border-slate-300 p-2">Contest Announcement</td>
             </tr>
             <tr>
-                <td class="border border-slate-300 p-2">22 January</td>
+                <td class="border border-slate-300 p-2">18 January</td>
                 <td class="border border-slate-300 p-2">Participation Deadline</td>
             </tr>
             <tr>
