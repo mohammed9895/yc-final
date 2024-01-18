@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CybersecurityResource\Pages;
 use App\Filament\Resources\CybersecurityResource\RelationManagers;
 use App\Models\Cybersecurity;
+use App\Models\User;
+use App\Notifications\SmsMessage;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -12,6 +14,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 
 class CybersecurityResource extends Resource
 {
@@ -111,6 +114,44 @@ class CybersecurityResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('Approve')->action(function (Cybersecurity $record) {
+                    $user = User::where('id', $record->user_id)->first();
+                    $sms = new SmsMessage;
+                    if ($user->preferred_language == 'ar') {
+                        $sms->to($user->phone)
+                            ->message('أهلا بصديق المركز '.$user->name.' '.'يسرنا إعلامك بقبولك في برنامج ( الأمن السيبراني ). نحن بانتظارك في ( 05-02-2024 ) تبدأ الورشة ( 5:00 )')
+                            ->lang($user->preferred_language)
+                            ->send();
+                    } else {
+                        $sms->to($user->phone)
+                            ->message('Hello friend '.$user->name.' We are pleased to inform you that you have been accepted into the (Cybersecurity) program. We are waiting for you on (2024-02-05) The workshop begins (17:00:00)')
+                            ->lang($user->preferred_language)
+                            ->send();
+                    }
+                    $record->update(['status' => 1]);
+                })
+                    ->color('success')
+                    ->hidden(fn(Cybersecurity $record) => $record->status === 1)
+                    ->icon('heroicon-o-check-circle'),
+                Action::make('reject')->action(function (Cybersecurity $record) {
+                    $user = User::where('id', $record->user_id)->first();
+                    $sms = new SmsMessage;
+                    if ($user->preferred_language == 'ar') {
+                        $sms->to($user->phone)
+                            ->message('أهلا بصديق المركز، أهلًا، شكرًا لتسجيلك في برنامج الأمن السيبراني . نعتذر عن عدم قبولك ضمن المشاركين نظرًا للإقبال الواسع على المقاعد و اكتمال العدد المطلوب. نراكم في برامجنا القادمة.')
+                            ->lang($user->preferred_language)
+                            ->send();
+                    } else {
+                        $sms->to($user->phone)
+                            ->message('Hello, Thank you for registering for the Cybersecurity program. We apologize for being unable to accept you among the participants due to the high demand for registration and reaching the specified program limit. See you soon at our next programs.')
+                            ->lang($user->preferred_language)
+                            ->send();
+                    }
+                    $record->update(['status' => 2]);
+                })
+                    ->color('danger')
+                    ->hidden(fn(Cybersecurity $record) => $record->status === 2)
+                    ->icon('heroicon-o-x-circle'),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
