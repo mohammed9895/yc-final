@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\PhotographyCompetitionsResource\Pages;
 use App\Filament\Resources\PhotographyCompetitionsResource\RelationManagers;
 use App\Models\PhotographyCompetition;
@@ -84,6 +85,7 @@ class PhotographyCompetitionsResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export'),
             ]);
     }
 
