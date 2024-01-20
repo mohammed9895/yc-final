@@ -8,12 +8,14 @@ use App\Filament\Resources\PhotographyCompetitionsResource\RelationManagers;
 use App\Models\PhotographyCompetition;
 use App\Models\User;
 use App\Notifications\SmsMessage;
+use Carbon\Carbon;
 use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 
 class PhotographyCompetitionsResource extends Resource
 {
@@ -25,7 +27,7 @@ class PhotographyCompetitionsResource extends Resource
     {
         return $form
             ->schema([
-                FileUpload::make('images')->enableDownload(),
+                FileUpload::make('images')->multiple()->enableDownload(),
             ]);
     }
 
@@ -37,6 +39,22 @@ class PhotographyCompetitionsResource extends Resource
                     ->label(__('User'))
                     ->searchable()
                     ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
+                    ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('user.phone')
+                    ->label(__('phone')),
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label(__('email')),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state
+                ): string => Carbon::parse($state)->age),
+                Tables\Columns\TextColumn::make('images')
+                    ->label(__('Image'))
+                    ->searchable()
+                    ->prefix('http://yc-final.test/storage/')
+                    ->url(function ($record) {
+                        foreach ($record->images as $img) {
+                            return '/storage/'.$img;
+                        }
+                    })
                     ->openUrlInNewTab(),
             ])
             ->filters([
