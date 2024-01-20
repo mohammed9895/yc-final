@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\CybersecurityResource\Pages;
 use App\Filament\Resources\CybersecurityResource\RelationManagers;
 use App\Models\Cybersecurity;
@@ -156,6 +157,7 @@ class CybersecurityResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                FilamentExportBulkAction::make('export'),
             ]);
     }
 
