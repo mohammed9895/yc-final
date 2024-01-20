@@ -12,7 +12,7 @@ class PhotographyCompetition extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'images' => 'array',
+        'images' => 'string',
     ];
 
     public function user()

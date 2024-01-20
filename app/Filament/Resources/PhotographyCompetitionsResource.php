@@ -51,7 +51,8 @@ class PhotographyCompetitionsResource extends Resource
                     ->searchable()
                     ->prefix('http://yc-final.test/storage/')
                     ->url(function ($record) {
-                        foreach ($record->images as $img) {
+                        $arr = json_decode($record->images);
+                        foreach ($arr as $img) {
                             return '/storage/'.$img;
                         }
                     })
