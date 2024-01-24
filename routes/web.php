@@ -18,12 +18,11 @@ use JeffGreco13\FilamentBreezy\Http\Livewire\Auth\ResetPassword;
 
 Route::get('/', [HomeController::class, 'index']);
 
-
 Route::get('/language/{locale}', function ($locale) {
-    session()->put('locale', $locale);
+    Session::put('locale', $locale);
+    session()->get('locale');
     return redirect()->back();
 })->name('language.switch');
-
 
 Route::get('/paths/{id}', [HomeController::class, 'path']);
 

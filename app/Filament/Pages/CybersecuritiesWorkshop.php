@@ -22,6 +22,8 @@ class CybersecuritiesWorkshop extends Page implements HasForms
 
     public $isRegistered;
 
+    public $open = false;
+
     public function mount(): void
     {
         $this->form->fill();

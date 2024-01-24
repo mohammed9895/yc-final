@@ -17,6 +17,8 @@ class PhotographyCompetition extends Page implements HasForms
 
     protected static string $view = 'filament.pages.photography-competition';
 
+    public $open = false;
+
     public $isRegistered;
 
     public function mount(): void
