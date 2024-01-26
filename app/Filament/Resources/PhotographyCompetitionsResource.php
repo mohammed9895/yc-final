@@ -67,12 +67,12 @@ class PhotographyCompetitionsResource extends Resource
                     $sms = new SmsMessage;
                     if ($user->preferred_language == 'ar') {
                         $sms->to($user->phone)
-                            ->message('أهلا بصديق المركز '.$user->name.' '.'يسرنا إعلامك بقبولك في برنامج ( الأمن السيبراني ). نحن بانتظارك في ( 05-02-2024 ) تبدأ الورشة ( 5:00 )')
+                            ->message('أهلا بصديق المركزأهلاً بصديق المركز، يسرنا إعلامك بقبولك في مسابقة ( التصوير الفوتوغرافي )')
                             ->lang($user->preferred_language)
                             ->send();
                     } else {
                         $sms->to($user->phone)
-                            ->message('Hello friend '.$user->name.' We are pleased to inform you that you have been accepted into the (Cybersecurity) program. We are waiting for you on (2024-02-05) The workshop begins (17:00:00)')
+                            ->message('Hello friend, We are pleased to inform you that you have been accepted into the (Photography) Competition .')
                             ->lang($user->preferred_language)
                             ->send();
                     }
@@ -86,12 +86,14 @@ class PhotographyCompetitionsResource extends Resource
                     $sms = new SmsMessage;
                     if ($user->preferred_language == 'ar') {
                         $sms->to($user->phone)
-                            ->message('أهلا بصديق المركز '.$user->name.'يسرنا اعلامك بأنك تم اختيارك لبرنامج الأمن السيبراني نحن في انتظارك في تاريخ ٠٥-٠٢-٢٠٢٤ في تمام الساعة ١٧:٠٠')
+                            ->message('أهلًا،
+شكرًا لتسجيلك في مسابقة التصوير الفوتوغرافي. نعتذر عن عدم إجتيازك لمرحلة الفرز.
+ نراكم في برامجنا القادمة.')
                             ->lang($user->preferred_language)
                             ->send();
                     } else {
                         $sms->to($user->phone)
-                            ->message('Hello friend '.$user->name.' We are pleased to inform you that you have been accepted into the (Cybersecurity) program. We are waiting for you on (2024-02-05) The workshop begins (17:00:00)')
+                            ->message('Hello, Thank you for registering for the Photography Contest. We regret to inform that you have not been shortlisted. Hope to see you in our future programs.')
                             ->lang($user->preferred_language)
                             ->send();
                     }
