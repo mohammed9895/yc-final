@@ -8,6 +8,7 @@ use App\Filament\Resources\CybersecurityResource\RelationManagers;
 use App\Models\Cybersecurity;
 use App\Models\User;
 use App\Notifications\SmsMessage;
+use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -16,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 
 class CybersecurityResource extends Resource
 {
@@ -78,6 +80,12 @@ class CybersecurityResource extends Resource
                     ->searchable()
                     ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('user.phone')
+                    ->label(__('phone')),
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label(__('email')),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state
+                ): string => Carbon::parse($state)->age),
                 Tables\Columns\BooleanColumn::make('tried_linux')
                     ->label('Tried Linux'),
                 Tables\Columns\BooleanColumn::make('passionate_cyber_security')
