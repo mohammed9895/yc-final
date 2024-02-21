@@ -40,6 +40,8 @@ Route::get('/termsandconditions', function () {
     return view('frontend.terms');
 });
 
+Route::get('/ratings', \App\Http\Livewire\Ratings::class);
+
 
 Route::view('/manjam', 'frontend.manjam');
 
