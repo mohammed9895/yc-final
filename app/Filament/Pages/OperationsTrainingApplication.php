@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Notifications\SmsMessage;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -84,6 +85,9 @@ class OperationsTrainingApplication extends Page implements HasForms
                 }),
             Textarea::make('goals')
                 ->label('ما هي أهدافك من الانضمام إلى هذا البرنامج التدريبي؟')
+                ->required(),
+            FileUpload::make('cv')
+                ->label('السيرة الذاتية')
                 ->required(),
         ];
     }

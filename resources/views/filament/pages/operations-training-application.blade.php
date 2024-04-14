@@ -6,8 +6,11 @@
             مستويات الالتزام بالسلوكيات
             المهنية والأخلاقية.
         </p>
-        <p><span class="font-bold">فترة التسجيل  :</span>4 أبريل -14 أبريل</p>
         <p><span class="font-bold">مدة التدر يب :</span>3 أشهر</p>
+        <p><span class="font-bold">أن يكون المتقدم من سكان محافظة مسقط</span></p>
+        <p><span class="font-bold">أن يكون المتقدم باحثا عن العمل</span></p>
+        <p><span class="font-bold">أن يكون المتقدم في الفئة العمرية (٢٠ -٢٩)</span></p>
+        <p><span class="font-bold">ساعات العمل: ٧ ساعات</span></p>
         @if($isRegistered > 0)
             <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
                  role="alert">

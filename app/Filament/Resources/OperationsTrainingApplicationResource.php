@@ -6,6 +6,7 @@ use App\Filament\Resources\OperationsTrainingApplicationResource\Pages;
 use App\Filament\Resources\OperationsTrainingApplicationResource\RelationManagers;
 use App\Models\OperationsTrainingApplication;
 use App\Models\OperationsTrainingApplications;
+use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -21,6 +22,7 @@ class OperationsTrainingApplicationResource extends Resource
     {
         return $form
             ->schema([
+                FileUpload::make('cv')->enableDownload()
             ]);
     }
 
