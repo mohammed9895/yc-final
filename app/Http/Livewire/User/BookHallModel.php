@@ -37,10 +37,12 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
     public $counter = 0;
 
     public $slotsTimings = [
+        '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM',
         '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM',
-        '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM',
-        '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM', '09:00 PM',
-        '09:30 PM', '10:00 PM', '10:30 PM', '11:00 PM', '11:30 PM', '12:00 AM', '12:30 AM', '01:00 AM',
+        '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM',
+        '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM',
+        '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM',
+        '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM'
     ];
 
     public function mount(Hall $hall)
@@ -69,8 +71,8 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
         if ($this->slots != []) {
             $startTime = min($this->slots);
             $endTime = max($this->slots);
-            $startDateAndTime = Carbon::parse($orginal['date'].$startTime);
-            $endDateAndTime = Carbon::parse($orginal['date'].$endTime);
+            $startDateAndTime = Carbon::parse($orginal['date'] . $startTime);
+            $endDateAndTime = Carbon::parse($orginal['date'] . $endTime);
 
             $orginal['start'] = $startDateAndTime;
 
@@ -129,12 +131,12 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
                     $user = auth()->user();
                     if ($user->preferred_language == 'ar') {
                         $sms->to($user->phone)
-                            ->message('تم استلام طلبك حجزك ل '.$this->hall->name.' سوف يتم تأكيد حجزك قريبًا')
+                            ->message('تم استلام طلبك حجزك ل ' . $this->hall->name . ' سوف يتم تأكيد حجزك قريبًا')
                             ->lang($user->preferred_language)
                             ->send();
                     } else {
                         $sms->to($user->phone)
-                            ->message("Your reservation has been received for ".$this->hall->name.", It will be confirmed soon.")
+                            ->message("Your reservation has been received for " . $this->hall->name . ", It will be confirmed soon.")
                             ->lang($user->preferred_language)
                             ->send();
                     }
@@ -174,20 +176,22 @@ class BookHallModel extends ModalComponent implements Forms\Contracts\HasForms
             if ($dayOfWeek === Carbon::FRIDAY) {
                 // Assign your modified slots for Friday
                 $this->slotsTimings = [
-                    '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM',
-                    '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM',
-                    '09:00 PM', '09:30 PM', '10:00 PM', '10:30 PM', '11:00 PM', '11:30 PM', '12:00 AM', '12:30 AM',
-                    '01:00 AM',
+                    '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM',
+                    '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM',
+                    '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM',
+                    '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM',
+                    '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM',
+                    '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM'
                 ];
             } else {
                 // Assign your default slots for other days
                 $this->slotsTimings = [
+                    '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM',
                     '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM',
-                    '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM',
-                    '04:30 PM',
-                    '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM',
-                    '09:00 PM',
-                    '09:30 PM', '10:00 PM', '10:30 PM', '11:00 PM', '11:30 PM', '12:00 AM', '12:30 AM', '01:00 AM',
+                    '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM',
+                    '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM',
+                    '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM',
+                    '08:00 PM', '08:30 PM', '09:00 PM', '09:30 PM', '10:00 PM',
                 ];
             }
         }

@@ -17,7 +17,7 @@ class OperationsTrainingApplication extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.operations-training-application';
-    public $open = true;
+    public $open = false;
     public $isRegistered;
 
     protected static function getNavigationLabel(): string

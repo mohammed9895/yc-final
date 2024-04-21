@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\FilamentExport;
 use App\Filament\Resources\OperationsTrainingApplicationResource\Pages;
 use App\Filament\Resources\OperationsTrainingApplicationResource\RelationManagers;
 use App\Models\OperationsTrainingApplication;
@@ -45,6 +46,7 @@ class OperationsTrainingApplicationResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExport::make(),
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
