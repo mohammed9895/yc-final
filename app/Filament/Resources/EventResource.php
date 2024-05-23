@@ -2,33 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use Carbon\Carbon;
-use Filament\Forms;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\EventResource\Pages;
+use App\Filament\Resources\EventResource\RelationManagers;
+use App\Mail\HallConfirmationMail;
+use App\Models\Event;
 use App\Models\Hall;
 use App\Models\User;
-use Filament\Tables;
-use App\Models\Event;
-use Filament\Resources\Form;
-use Filament\Resources\Table;
-use Spatie\CalendarLinks\Link;
-use Filament\Resources\Resource;
 use App\Notifications\SmsMessage;
-use App\Mail\HallConfirmationMail;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Filters\Filter;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
-use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Config;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Notifications\Notification;
+use Carbon\Carbon;
+use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Filament\Resources\EventResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\EventResource\RelationManagers;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Spatie\CalendarLinks\Link;
 
 class EventResource extends Resource
 {
@@ -36,63 +36,14 @@ class EventResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    protected static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::where('status', 0)->count();
-    }
-
-    protected static function getNavigationGroup(): ?string
-    {
-        return   __('halls');
-    }
-
     public static function getModelLabel(): string
     {
-        return   __('events');
+        return __('events');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return   __('events');
-    }
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label(__('Title'))
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('reasone')
-                    ->label(__('reasone'))
-                    ->required()
-                    ->maxLength(255),
-                Select::make('hall_id')
-                    ->label(__('hall'))
-                    ->options(Hall::all()
-                        ->where('status', 1)
-                        ->pluck('name', 'id'))
-                    ->searchable()
-                    ->required(),
-                Forms\Components\DateTimePicker::make('start')
-                    ->label(__('start'))
-                    ->withoutSeconds()
-                    ->minutesStep(30)
-                    ->required(),
-                Forms\Components\DateTimePicker::make('end')
-                    ->label(__('end'))
-                    ->withoutSeconds()
-                    ->minutesStep(30)
-                    ->required(),
-                Select::make('hall_id')
-                    ->label(__('User'))
-                    ->options(User::all()
-                        ->pluck('name', 'id'))
-                    ->searchable()
-                    ->required(),
-                Forms\Components\TextInput::make('pax')->required()->numeric()->label(__('pax'))
-            ]);
+        return __('events');
     }
 
     public static function table(Table $table): Table
@@ -141,7 +92,7 @@ class EventResource extends Resource
                         return $query
                             ->when(
                                 $data['start_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('start', '=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('start', '=', $date),
                             );
                     }),
                 Filter::make('date')
@@ -154,11 +105,11 @@ class EventResource extends Resource
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
 
@@ -227,6 +178,7 @@ class EventResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation(),
+
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -284,6 +236,46 @@ class EventResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation(),
+                FilamentExportBulkAction::make('export'),
+            ]);
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('title')
+                    ->label(__('Title'))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('reasone')
+                    ->label(__('reasone'))
+                    ->required()
+                    ->maxLength(255),
+                Select::make('hall_id')
+                    ->label(__('hall'))
+                    ->options(Hall::all()
+                        ->where('status', 1)
+                        ->pluck('name', 'id'))
+                    ->searchable()
+                    ->required(),
+                Forms\Components\DateTimePicker::make('start')
+                    ->label(__('start'))
+                    ->withoutSeconds()
+                    ->minutesStep(30)
+                    ->required(),
+                Forms\Components\DateTimePicker::make('end')
+                    ->label(__('end'))
+                    ->withoutSeconds()
+                    ->minutesStep(30)
+                    ->required(),
+                Select::make('hall_id')
+                    ->label(__('User'))
+                    ->options(User::all()
+                        ->pluck('name', 'id'))
+                    ->searchable()
+                    ->required(),
+                Forms\Components\TextInput::make('pax')->required()->numeric()->label(__('pax'))
             ]);
     }
 
@@ -301,5 +293,15 @@ class EventResource extends Resource
             'create' => Pages\CreateEvent::route('/create'),
             'edit' => Pages\EditEvent::route('/{record}/edit'),
         ];
+    }
+
+    protected static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', 0)->count();
+    }
+
+    protected static function getNavigationGroup(): ?string
+    {
+        return __('halls');
     }
 }
