@@ -5,14 +5,11 @@ namespace App\Filament\Resources;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\TrainingAlppicationResource\Pages;
 use App\Filament\Resources\TrainingAlppicationResource\RelationManagers;
-use App\Models\Booking;
 use App\Models\EducationType;
 use App\Models\EmployeeType;
 use App\Models\Province;
-use App\Models\Slot;
 use App\Models\TrainingApplication;
 use App\Models\User;
-use App\Models\Workshop;
 use App\Notifications\SmsMessage;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -25,7 +22,6 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,11 +30,6 @@ class TrainingAlppicationResource extends Resource
     protected static ?string $model = TrainingApplication::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
-
-    protected function getTableQuery(): Builder
-    {
-        return parent::getTableQuery()->withoutGlobalScopes();
-    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -69,13 +60,16 @@ class TrainingAlppicationResource extends Resource
             ->columns([
                 TextColumn::make('user.name')->label(__('User'))
                     ->searchable()
-                    ->url(fn ($record) => UserResource::getUrl('view', $record->user_id))
+                    ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
-                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn (string $state): string => Carbon::parse($state)->age),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('province.name')->label(__('province')),
                 Tables\Columns\TextColumn::make('educationType.name')->label(__('filament::users.degree')),
                 Tables\Columns\TextColumn::make('employeeType.name')->label(__('filament::users.work')),
-                Tables\Columns\TextColumn::make('cv')->label(__('CV'))->url(fn ($record) => 'https://yc.om/storage/' . $record->cv)->openUrlInNewTab()->prefix('https://yc.om/storage/'),
+                TextColumn::make('reason'),
+                TextColumn::make('experience'),
+                TextColumn::make('transportation'),
+                Tables\Columns\TextColumn::make('cv')->label(__('CV'))->url(fn($record) => 'https://yc.om/storage/' . $record->cv)->openUrlInNewTab()->prefix('https://yc.om/storage/'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')
@@ -91,7 +85,7 @@ class TrainingAlppicationResource extends Resource
                 Action::make('download')->action('approve')
                     ->label(__('Download CV'))
                     ->action(function (TrainingApplication $record) {
-                        $outputFile = Storage::disk('local')->path("/public/" .$record->cv);
+                        $outputFile = Storage::disk('local')->path("/public/" . $record->cv);
                         return Response::download($outputFile, $record->user->name . '_cv.pdf');
                     }),
             ])
@@ -143,5 +137,10 @@ class TrainingAlppicationResource extends Resource
             'create' => Pages\CreateTrainingAlppication::route('/create'),
             'edit' => Pages\EditTrainingAlppication::route('/{record}/edit'),
         ];
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return parent::getTableQuery()->withoutGlobalScopes();
     }
 }
