@@ -63,6 +63,7 @@ class TrainingAlppicationResource extends Resource
                     ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
                 TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state): string => Carbon::parse($state)->age),
+                Tables\Columns\TextColumn::make('user.phone')->label(__('phone')),
                 Tables\Columns\TextColumn::make('province.name')->label(__('province')),
                 Tables\Columns\TextColumn::make('educationType.name')->label(__('filament::users.degree')),
                 Tables\Columns\TextColumn::make('employeeType.name')->label(__('filament::users.work')),
