@@ -62,6 +62,8 @@ class TrainingAlppicationResource extends Resource
                     ->searchable()
                     ->url(fn($record) => UserResource::getUrl('view', $record->user_id))
                     ->openUrlInNewTab(),
+                TextColumn::make('user.email')->label(__('User'))
+                    ->searchable(),
                 TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('user.phone')->label(__('phone')),
                 Tables\Columns\TextColumn::make('province.name')->label(__('province')),

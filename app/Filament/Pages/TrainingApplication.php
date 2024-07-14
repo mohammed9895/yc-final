@@ -25,7 +25,7 @@ class TrainingApplication extends Page implements HasForms, HasTable
 
     public $registred = 0;
 
-    public $open = true;
+    public $open = false;
 
     protected static function getNavigationLabel(): string
     {
