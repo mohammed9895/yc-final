@@ -26,18 +26,18 @@ class GCCCampPage extends Page implements HasForms, HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     protected static string $view = 'filament.pages.g-c-c-camp';
 
     protected static function getNavigationLabel(): string
     {
-        return __('إستمارة المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارة المشاركة في مخيم الشباب العربي 2024');
     }
 
     public function getTitle(): string
     {
-        return __('إستمارة المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارة المشاركة في مخيم الشباب العربي 2024');
     }
 
     public function mount(): void
