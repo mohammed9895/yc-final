@@ -77,9 +77,16 @@ class GCCCampPage extends Page implements HasForms, HasTable
                 ->schema([
                     Section::make('معلومات أساسية')
                         ->schema([
-                            TextInput::make('orginization')
-                                ->required()
-                                ->label('الجهة المشارك من خلالها'),
+                            TextInput::make('why_you_want_to_register')
+                                ->label('لماذا ترغب في المشاركة في مخيم الشباب العربي 2024؟'),
+                            TextInput::make('goals')
+                                ->label('ما هي أهدافك المهنية أو الشخصية التي تأمل في تحقيقها من خلال مشاركتك في المخيم؟'),
+                            TextInput::make('experience')
+                                ->label('هل لديك خبرات سابقة في أنشطة أو برامج مشابهة؟ إذا كانت الإجابة نعم، يرجى وصفها.'),
+                            TextInput::make('talents')
+                                ->label('ما هي المهارات أو المواهب التي ترغب في تطويرها خلال فترة المخيم؟'),
+                            TextInput::make('suggestions')
+                                ->label('هل لديك أي اقتراحات أو توقعات خاصة تتمنى تحقيقها في المخيم؟'),
                             Select::make('shert_size')
                                 ->required()
                                 ->searchable()
