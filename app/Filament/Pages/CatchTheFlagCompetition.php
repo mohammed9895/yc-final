@@ -18,12 +18,12 @@ class CatchTheFlagCompetition extends Page
 
     protected static function getNavigationLabel(): string
     {
-        return __('إستمارة المشاركة في مخيم الشباب العربي 2024');
+        return __('إستمارة المشاركة في مسابقة التقط العلم  للأمن السيبراني');
     }
 
     public function getTitle(): string
     {
-        return __('إستمارة المشاركة في مخيم الشباب العربي 2024');
+        return __('إستمارة المشاركة في مسابقة التقط العلم  للأمن السيبراني');
     }
 
     public function mount(): void
