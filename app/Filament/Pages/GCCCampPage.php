@@ -30,7 +30,7 @@ class GCCCampPage extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.g-c-c-camp';
     public $isRegistered;
-    public $open = false;
+    public $open = true;
 
     protected static function getNavigationLabel(): string
     {

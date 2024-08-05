@@ -18,7 +18,7 @@ class CatchTheFlagCompetition extends Page
 
     public $isRegistered;
 
-    public $open = false;
+    public $open = true;
 
     protected static function getNavigationLabel(): string
     {
