@@ -16,6 +16,10 @@ class CatchTheFlagCompetition extends Page
 
     protected static string $view = 'filament.pages.catch-the-flag-competition';
 
+    public $isRegistered;
+
+    public $open = false;
+
     protected static function getNavigationLabel(): string
     {
         return __('إستمارة المشاركة في مسابقة التقط العلم  للأمن السيبراني');
@@ -29,6 +33,7 @@ class CatchTheFlagCompetition extends Page
     public function mount(): void
     {
         $this->form->fill();
+        $this->isRegistered = \App\Models\CatchTheFlagCompetition::where('user_id', '=', auth()->id())->count();
     }
 
     public function register()

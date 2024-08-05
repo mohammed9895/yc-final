@@ -29,6 +29,8 @@ class GCCCampPage extends Page implements HasForms, HasTable
     protected static bool $shouldRegisterNavigation = true;
 
     protected static string $view = 'filament.pages.g-c-c-camp';
+    public $isRegistered;
+    public $open = false;
 
     protected static function getNavigationLabel(): string
     {
@@ -43,6 +45,7 @@ class GCCCampPage extends Page implements HasForms, HasTable
     public function mount(): void
     {
         $this->form->fill();
+        $this->isRegistered = GCCCamp::where('user_id', '=', auth()->id())->count();
     }
 
     public function register()
@@ -54,12 +57,12 @@ class GCCCampPage extends Page implements HasForms, HasTable
             $sms = new SmsMessage;
             if (auth()->user()->preferred_language == 'ar') {
                 $sms->to(auth()->user()->phone)
-                    ->message('شكراً لك، تم ارسال إستمارتك لطلب المشاركة في مخيم الشباب الخليجي 2023')
+                    ->message('شكراً لك، تم ارسال إستمارتك لطلب المشاركة في مخيم الشباب العربي 2024')
                     ->lang(auth()->user()->preferred_language)
                     ->send();
             } else {
                 $sms->to(auth()->user()->phone)
-                    ->message('Thank you, your application has been sent to request participation in the Gulf Youth Camp')
+                    ->message('Thank you, your application has been sent to request participation in the Arab Youth Camp 2024')
                     ->lang(auth()->user()->preferred_language)
                     ->send();
             }
