@@ -26,6 +26,9 @@ class GCCCampPage extends Page implements HasForms, HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
+
+    protected static ?string $slug = 'youth-arab-camp-2024';
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static string $view = 'filament.pages.g-c-c-camp';
