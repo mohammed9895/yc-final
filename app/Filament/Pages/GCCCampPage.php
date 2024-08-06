@@ -49,8 +49,8 @@ class GCCCampPage extends Page implements HasForms, HasTable
     public function mount(): void
     {
         $this->form->fill();
-//        $this->isRegistered = GCCCamp::where('user_id', '=', auth()->id())->count();
-        $this->isRegistered = 0;
+        $this->isRegistered = GCCCamp::where('user_id', '=', auth()->id())->count();
+//        $this->isRegistered = 0;
     }
 
     public function register()
