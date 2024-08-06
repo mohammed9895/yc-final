@@ -1,4 +1,44 @@
 <x-filament::page>
+    <div class="col-span-full">
+        <div id="maalomat-asasy"
+             class="filament-forms-section-component rounded-xl border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
+            <div
+                class="filament-forms-section-header-wrapper flex rtl:space-x-reverse overflow-hidden rounded-t-xl min-h-[56px] px-4 py-2 items-center bg-gray-100 dark:bg-gray-900">
+                <div class="filament-forms-section-header flex-1 space-y-1">
+                    <h3 class="font-bold tracking-tight pointer-events-none flex flex-row items-center text-xl">
+                        ضوابط المشاركة
+                    </h3>
+
+                </div>
+
+            </div>
+
+            <div class="filament-forms-section-content-wrapper">
+                <div class="filament-forms-section-content p-6">
+                    <div class="grid grid-cols-1 filament-forms-component-container gap-6">
+                        <ul>
+                            <ul>
+                                <li>1. العمر: يجب أن يكون عمر المشارك بين 20 و29 سنة.</li>
+                                <li>المهارات: يجب أن يمتلك المشارك مهارات فنية أو عملية، بالإضافة إلى المهارات
+                                    الاجتماعية والتواصل الفعال.
+                                </li>
+                                <li>الإنجازات والشهادات: سيتم أخذ المشاركين الحاصلين على شهادات مشاركات محلية أو دولية
+                                    أو الحاصلين
+                                    على جوائز الإنجازات وطنية بعين الاعتبار.
+                                </li>
+                                <li> القدرات القيادية: ُيفضل أن يكون المشارك لديه مهارات ريادية وقيادية.
+                                </li>
+                                <li>الأسئلة المرفقة: سيتم اختيار المشاركين بنا ًء على إجاباتهم على الأسئلة المرفقة في
+                                    استمارة التسجيل.
+                                </li>
+                                <li>٧-سوف يتم الأخذ بعين الإعتبار في إختيار المشاركين بناءاً على الأسئلة المرفقة</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @if($open)
         @if($isRegistered > 0)
             <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
@@ -37,3 +77,5 @@
         </div>
     @endif
 </x-filament::page>
+
+
