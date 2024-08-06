@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\GCCCamp;
 use App\Notifications\SmsMessage;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -48,7 +49,8 @@ class GCCCampPage extends Page implements HasForms, HasTable
     public function mount(): void
     {
         $this->form->fill();
-        $this->isRegistered = GCCCamp::where('user_id', '=', auth()->id())->count();
+//        $this->isRegistered = GCCCamp::where('user_id', '=', auth()->id())->count();
+        $this->isRegistered = 0;
     }
 
     public function register()
@@ -83,6 +85,12 @@ class GCCCampPage extends Page implements HasForms, HasTable
                 ->schema([
                     Section::make('معلومات أساسية')
                         ->schema([
+                            TextInput::make('nationality')
+                                ->label('الجنسية'),
+                            TextInput::make('full_address')
+                                ->label('مقر الإقامة الحالي'),
+                            TextInput::make('airport')
+                                ->label('عند حجز تذكرتك لمحافظة ظفار لتاريخ 12 / أغسطس / 2024، ما هو إسم المطار الأقرب لك؟'),
                             TextInput::make('why_you_want_to_register')
                                 ->label('لماذا ترغب في المشاركة في مخيم الشباب العربي 2024؟'),
                             TextInput::make('goals')
@@ -112,6 +120,8 @@ class GCCCampPage extends Page implements HasForms, HasTable
                         ->schema([
                             Checkbox::make('has_heart_issues')
                                 ->label('مشاكل في القلب أو ارتفاع ضغط الدم؟'),
+                            Checkbox::make('fitness')
+                                ->label('هل لديك لياقة بدنية عالية ؟'),
                             Checkbox::make('has_respiratory_issues')
                                 ->reactive()
                                 ->label('ربو أو نزلات شعبية أو ضيق في التنفس؟'),
@@ -192,6 +202,18 @@ class GCCCampPage extends Page implements HasForms, HasTable
                             TextInput::make('email')
                                 ->required()
                                 ->label('الإيميل :'),
+                        ]),
+                    Section::make('المرفقات')
+                        ->schema([
+                            FileUpload::make('cv')
+                                ->required()
+                                ->label('إرفاق السيرة الذاتية'),
+                            FileUpload::make('passport')
+                                ->required()
+                                ->label('صورة من الجواز السفر '),
+                            FileUpload::make('id_card')
+                                ->required()
+                                ->label('صورة البطاقة الشخصية للعمانيين والمقيمين في عمان'),
                         ]),
                 ]),
             Grid::make(1)->schema([
