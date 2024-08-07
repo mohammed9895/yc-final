@@ -169,12 +169,15 @@ class GCCCampResource extends Resource
                             ->schema([
                                 FileUpload::make('cv')
                                     ->required()
+                                    ->enableDownload()
                                     ->label('إرفاق السيرة الذاتية'),
                                 FileUpload::make('passport')
+                                    ->enableDownload()
                                     ->required()
                                     ->label('صورة من الجواز السفر '),
                                 FileUpload::make('id_card')
                                     ->required()
+                                    ->enableDownload()
                                     ->label('صورة البطاقة الشخصية للعمانيين والمقيمين في عمان'),
                             ]),
                     ]),
