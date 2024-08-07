@@ -65,15 +65,15 @@ class Register extends Component implements HasForms
             $messageSms = '';
 
             if (Config::get('app.locale') == 'ar') {
-                $messageSms = "رمز التأكيد الخاص بك هو: ".$phone_verified_code;
+                $messageSms = "رمز التأكيد الخاص بك هو: " . $phone_verified_code;
             } else {
-                $messageSms = "Your Verifcation code is ".$phone_verified_code;
+                $messageSms = "Your Verifcation code is " . $phone_verified_code;
             }
 
             $lang = Config::get('app.locale') == 'ar' ? '64' : '0';
-            $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId='.env('User_ID_OTP',
-                    'youthsmsweb').'&Password='.env('OTP_Password',
-                    'L!ulid80').'&MobileNo='.$orginal['phone'].'&Message='.$messageSms.'&PushDateTime=10/12/2022 02:03:00&Lang='.$lang.'&FLashSMS=N');
+            $response = Http::post('https://www.ismartsms.net/iBulkSMS/HttpWS/SMSDynamicAPI.aspx?UserId=' . env('User_ID_OTP',
+                    'youthsmsweb') . '&Password=' . env('OTP_Password',
+                    'L!ulid80') . '&MobileNo=' . $orginal['phone'] . '&Message=' . $messageSms . '&PushDateTime=10/12/2022 02:03:00&Lang=' . $lang . '&FLashSMS=N');
 
             $user = User::create($orginal);
             $user->assignRole('filament_user');
@@ -131,7 +131,7 @@ class Register extends Component implements HasForms
                             ->dehydrated(false),
                         TextInput::make('phone')
                             ->label(__('filament::users.phone'))
-                            ->maxLength(8)
+                            ->maxLength(20)
                             ->required()
                             ->minLength(8),
                         DatePicker::make('birth_date')
@@ -165,7 +165,7 @@ class Register extends Component implements HasForms
                                 0 => __('filament::users.citizin'),
                                 1 => __('filament::users.foreigner'),
                             ])->required(),
-                        TextInput::make('civil_no')->label(__('Civil Number'))->maxLength(10)->required(),
+                        TextInput::make('civil_no')->label(__('Civil Number'))->maxLength(30)->required(),
                         Select::make('country_id')
                             ->label(__('filament::users.coutry'))
                             ->required()
@@ -216,7 +216,7 @@ class Register extends Component implements HasForms
                                     'ar' => 'Arabic'
                                 ]
                             ),
-                        Checkbox::make('agreed_on_terms')->label(new HtmlString(''.__('I agree with the').' <a href="/termsandconditions" target="_blank" class="text-primary-600">'.__('terms and conditions').'</a>'))->inline()->required()
+                        Checkbox::make('agreed_on_terms')->label(new HtmlString('' . __('I agree with the') . ' <a href="/termsandconditions" target="_blank" class="text-primary-600">' . __('terms and conditions') . '</a>'))->inline()->required()
                     ])
             ])
                 ->columns([
