@@ -85,6 +85,10 @@ class GCCCampPage extends Page implements HasForms, HasTable
                 ->schema([
                     Section::make('معلومات أساسية')
                         ->schema([
+                            TextInput::make('fullname_ar')
+                                ->label('الاسم الثلاثي باللغة العربية "حسب جواز السفر"'),
+                            TextInput::make('fullname_en')
+                                ->label('الاسم الثلاثي باللغة الانجليزية "حسب جواز السفر"'),
                             TextInput::make('nationality')
                                 ->label('الجنسية'),
                             TextInput::make('full_address')
