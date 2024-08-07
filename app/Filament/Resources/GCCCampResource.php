@@ -171,6 +171,11 @@ class GCCCampResource extends Resource
                     ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('user.phone')->searchable()->label('Phone'),
                 Tables\Columns\TextColumn::make('user.email')->searchable()->label('Email'),
+                Tables\Columns\BadgeColumn::make('user.gender')
+                    ->enum([
+                        0 => 'Male',
+                        1 => 'Female'
+                    ])->searchable()->sortable(),
                 TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('fullname_ar')
                     ->label('الاسم الثلاثي باللغة العربية "حسب جواز السفر"')
