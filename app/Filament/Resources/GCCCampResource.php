@@ -6,6 +6,7 @@ use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\GCCCampResource\Pages;
 use App\Models\GCCCamp;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -75,7 +76,7 @@ class GCCCampResource extends Resource
                                 TextInput::make('crisis_stage')
                                     ->required()
                                     ->label('إذا كان الجواب نعم الرجاء ذكر مرحلة الأزمة')
-                                    ->visible(fn(callable $get) => $get('has_respiratory_issues')),
+                                    ->hidden(fn(callable $get) => $get('has_respiratory_issues') == null),
                                 Checkbox::make('has_diabetes')
                                     ->label('مرض السكر ؟'),
                                 Checkbox::make('has_head_injury')
@@ -170,36 +171,131 @@ class GCCCampResource extends Resource
                     ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('user.phone')->searchable()->label('Phone'),
                 Tables\Columns\TextColumn::make('user.email')->searchable()->label('Email'),
-                Tables\Columns\IconColumn::make('has_heart_issues')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('has_respiratory_issues')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('crisis_stage'),
-                Tables\Columns\IconColumn::make('has_diabetes')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('has_head_injury')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('head_injury_details'),
-                Tables\Columns\IconColumn::make('is_registered_disabled')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('has_bone_or_tendon_injury')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('bone_tendon_injury_details'),
-                Tables\Columns\IconColumn::make('has_infectious_disease')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('infectious_disease_details'),
-                Tables\Columns\TextColumn::make('blood_type'),
-                Tables\Columns\IconColumn::make('had_medical_treatment')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('medical_treatment_details'),
-                Tables\Columns\TextColumn::make('medications'),
-                Tables\Columns\TextColumn::make('other_medical_issues'),
-                Tables\Columns\TextColumn::make('diet'),
-                Tables\Columns\TextColumn::make('fears'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(),
-                TextColumn::make('updated_at')
-                    ->dateTime(),
+                TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state): string => Carbon::parse($state)->age),
+                Tables\Columns\TextColumn::make('fullname_ar')
+                    ->label('الاسم الثلاثي باللغة العربية "حسب جواز السفر"')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('fullname_en')
+                    ->label('الاسم الثلاثي باللغة الانجليزية "حسب جواز السفر"')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nationality')
+                    ->label('الجنسية')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('full_address')
+                    ->label('مقر الإقامة الحالي')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('airport')
+                    ->label('أقرب مطار')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('why_you_want_to_register')
+                    ->label('لماذا ترغب في المشاركة؟')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('goals')
+                    ->label('ما هي أهدافك؟')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('experience')
+                    ->label('هل لديك خبرات سابقة؟')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('talents')
+                    ->label('ما هي المهارات أو المواهب؟')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('suggestions')
+                    ->label('هل لديك أي اقتراحات؟')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('shert_size')
+                    ->label('مقاس المقيص')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\BooleanColumn::make('has_heart_issues')
+                    ->label('مشاكل في القلب؟'),
+                Tables\Columns\BooleanColumn::make('fitness')
+                    ->label('لياقة بدنية عالية؟'),
+                Tables\Columns\BooleanColumn::make('has_respiratory_issues')
+                    ->label('ربو أو ضيق في التنفس؟'),
+                Tables\Columns\TextColumn::make('crisis_stage')
+                    ->label('مرحلة الأزمة')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\BooleanColumn::make('has_diabetes')
+                    ->label('مرض السكر؟'),
+                Tables\Columns\BooleanColumn::make('has_head_injury')
+                    ->label('نوبات إغماء أو صداع نصفي؟'),
+                Tables\Columns\TextColumn::make('head_injury_details')
+                    ->label('تفاصيل إصابة الرأس')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\BooleanColumn::make('is_registered_disabled')
+                    ->label('احتياجات خاصة؟'),
+                Tables\Columns\BooleanColumn::make('has_bone_or_tendon_injury')
+                    ->label('كسور أو تمزق؟'),
+                Tables\Columns\TextColumn::make('bone_tendon_injury_details')
+                    ->label('تفاصيل الإصابة')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\BooleanColumn::make('has_infectious_disease')
+                    ->label('مرض معدي؟'),
+                Tables\Columns\TextColumn::make('infectious_disease_details')
+                    ->label('تفاصيل المرض')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\BooleanColumn::make('had_medical_treatment')
+                    ->label('تلقي علاج طبي؟'),
+                Tables\Columns\TextColumn::make('medical_treatment_details')
+                    ->label('تفاصيل العلاج')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('blood_type')
+                    ->label('فصيلة الدم')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('medications')
+                    ->label('الأدوية')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('other_medical_issues')
+                    ->label('متاعب طبية أخرى')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('diet')
+                    ->label('أسلوب غذائي')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('fears')
+                    ->label('مخاوف')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('emergency_contact_name')
+                    ->label('شخص للتواصل في حالة الطوارئ')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('العنوان')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('phone_1')
+                    ->label('رقم الهاتف 1')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->label('الإيميل')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('cv')
+                    ->label('السيرة الذاتية'),
+                Tables\Columns\TextColumn::make('passport')
+                    ->label('صورة جواز السفر'),
+                Tables\Columns\TextColumn::make('id_card')
+                    ->label('البطاقة الشخصية'),
             ])
             ->filters([
                 //
