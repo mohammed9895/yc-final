@@ -175,7 +175,8 @@ class GCCCampResource extends Resource
                     ->enum([
                         0 => 'Male',
                         1 => 'Female'
-                    ])->searchable()->sortable(),
+                    ])->searchable()
+                    ->label(__('filament::users.sex'))->sortable(),
                 TextColumn::make('user.birth_date')->label(__('Age'))->formatStateUsing(fn(string $state): string => Carbon::parse($state)->age),
                 Tables\Columns\TextColumn::make('fullname_ar')
                     ->label('الاسم الثلاثي باللغة العربية "حسب جواز السفر"')
