@@ -5,9 +5,9 @@ namespace App\Filament\Resources;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\GCCCampResource\Pages;
 use App\Models\GCCCamp;
-use App\Models\User;
 use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -27,12 +27,12 @@ class GCCCampResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('إستمارات المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارة المشاركة في مخيم الشباب العربي 2024');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('إستمارات المشاركة في مخيم الشباب الخليجي 2023');
+        return __('إستمارة المشاركة في مخيم الشباب العربي 2024');
     }
 
     public static function form(Form $form): Form
@@ -43,14 +43,26 @@ class GCCCampResource extends Resource
                     ->schema([
                         Section::make('معلومات أساسية')
                             ->schema([
-                                Select::make('user_id')
-                                    ->label(__('User'))
-                                    ->options(User::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->required(),
-                                TextInput::make('orginization')
-                                    ->required()
-                                    ->label('الجهة المشارك من خلالها'),
+                                TextInput::make('fullname_ar')
+                                    ->label('الاسم الثلاثي باللغة العربية "حسب جواز السفر"'),
+                                TextInput::make('fullname_en')
+                                    ->label('الاسم الثلاثي باللغة الانجليزية "حسب جواز السفر"'),
+                                TextInput::make('nationality')
+                                    ->label('الجنسية'),
+                                TextInput::make('full_address')
+                                    ->label('مقر الإقامة الحالي'),
+                                TextInput::make('airport')
+                                    ->label('عند حجز تذكرتك لمحافظة ظفار لتاريخ 12 / أغسطس / 2024، ما هو إسم المطار الأقرب لك؟'),
+                                TextInput::make('why_you_want_to_register')
+                                    ->label('لماذا ترغب في المشاركة في مخيم الشباب العربي 2024؟'),
+                                TextInput::make('goals')
+                                    ->label('ما هي أهدافك المهنية أو الشخصية التي تأمل في تحقيقها من خلال مشاركتك في المخيم؟'),
+                                TextInput::make('experience')
+                                    ->label('هل لديك خبرات سابقة في أنشطة أو برامج مشابهة؟ إذا كانت الإجابة نعم، يرجى وصفها.'),
+                                TextInput::make('talents')
+                                    ->label('ما هي المهارات أو المواهب التي ترغب في تطويرها خلال فترة المخيم؟'),
+                                TextInput::make('suggestions')
+                                    ->label('هل لديك أي اقتراحات أو توقعات خاصة تتمنى تحقيقها في المخيم؟'),
                                 Select::make('shert_size')
                                     ->required()
                                     ->searchable()
@@ -70,20 +82,22 @@ class GCCCampResource extends Resource
                             ->schema([
                                 Checkbox::make('has_heart_issues')
                                     ->label('مشاكل في القلب أو ارتفاع ضغط الدم؟'),
+                                Checkbox::make('fitness')
+                                    ->label('هل لديك لياقة بدنية عالية ؟'),
                                 Checkbox::make('has_respiratory_issues')
                                     ->reactive()
                                     ->label('ربو أو نزلات شعبية أو ضيق في التنفس؟'),
                                 TextInput::make('crisis_stage')
-                                    ->required()
+                                    ->required(fn(callable $get) => $get('has_respiratory_issues'))
                                     ->label('إذا كان الجواب نعم الرجاء ذكر مرحلة الأزمة')
-                                    ->hidden(fn(callable $get) => $get('has_respiratory_issues') == null),
+                                    ->visible(fn(callable $get) => $get('has_respiratory_issues')),
                                 Checkbox::make('has_diabetes')
                                     ->label('مرض السكر ؟'),
                                 Checkbox::make('has_head_injury')
                                     ->reactive()
                                     ->label('صراع أو نوبات إغماء أو صداع نصفي أو إصابة جسمية في الرأس؟'),
                                 TextInput::make('head_injury_details')
-                                    ->required()
+                                    ->required(fn(callable $get) => $get('has_head_injury'))
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالإصابة')
                                     ->visible(fn(callable $get) => $get('has_head_injury')),
                                 Checkbox::make('is_registered_disabled')
@@ -93,21 +107,20 @@ class GCCCampResource extends Resource
                                     ->label('كسور في العظام أو تمزق في الأربطة أو الوتر ؟'),
                                 TextInput::make('bone_tendon_injury_details')
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالإصابة')
-                                    ->required()
+                                    ->required(fn(callable $get) => $get('has_bone_or_tendon_injury'))
                                     ->visible(fn(callable $get) => $get('has_bone_or_tendon_injury')),
                                 Checkbox::make('has_infectious_disease')
                                     ->reactive()
                                     ->label('هل تعاني من أي مرض معدي أو تحمل مكروبات أمراض معدية ؟'),
                                 TextInput::make('infectious_disease_details')
-                                    ->required()
+                                    ->required(fn(callable $get) => $get('has_infectious_disease'))
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالمرض')
                                     ->visible(fn(callable $get) => $get('has_infectious_disease')),
                                 Checkbox::make('had_medical_treatment')
-                                    ->required()
                                     ->reactive()
                                     ->label('هل سبق لك أن تلقيت علاجا من الطبيب أو أنك دخلت المستشفى خلال العام الأخير؟'),
                                 TextInput::make('medical_treatment_details')
-                                    ->required()
+                                    ->required(fn(callable $get) => $get('had_medical_treatment'))
                                     ->label('إذا كان الجواب نعم الرجاء ذكرالسبب')
                                     ->visible(fn(callable $get) => $get('had_medical_treatment')),
                                 Select::make('blood_type')
@@ -119,6 +132,7 @@ class GCCCampResource extends Resource
                                         'B-' => 'B-',
                                         'B+' => 'B+',
                                         'A-' => 'A-',
+                                        'A+' => 'A+',
                                         'O-' => 'O-',
                                         'O+' => 'O+',
                                     ])
@@ -127,6 +141,7 @@ class GCCCampResource extends Resource
                                     ->required()
                                     ->label('هل تتعاطى أي أدوية ( إذا كانت الإجابة نعم نرجو منك وصف نوع الدواء والتفاصيل )'),
                                 TextInput::make('other_medical_issues')
+                                    ->required()
                                     ->label('هل تعاني من أي متاعب طبية أخرى يجوز أن تؤثر عليك خلال هذا البرنامج؟'),
                                 TextInput::make('diet')
                                     ->required()
@@ -145,20 +160,24 @@ class GCCCampResource extends Resource
                                     ->label('العنوان'),
                                 TextInput::make('phone_1')
                                     ->required()
-                                    ->label('رقم الهاتف :'),
+                                    ->label('رقم الهاتف 1 :'),
                                 TextInput::make('email')
                                     ->required()
                                     ->label('الإيميل :'),
                             ]),
+                        Section::make('المرفقات')
+                            ->schema([
+                                FileUpload::make('cv')
+                                    ->required()
+                                    ->label('إرفاق السيرة الذاتية'),
+                                FileUpload::make('passport')
+                                    ->required()
+                                    ->label('صورة من الجواز السفر '),
+                                FileUpload::make('id_card')
+                                    ->required()
+                                    ->label('صورة البطاقة الشخصية للعمانيين والمقيمين في عمان'),
+                            ]),
                     ]),
-                Grid::make(1)->schema([
-                    Checkbox::make('had_medical_treatment')
-                        ->required()
-                        ->label('أقر بأنني على دراية بأن المخيم يحتاج إلى جهد بدني وأني أعتبر نفسي لائق بدنيا بالدرجة الكافية التي تسمح لي بالمشاركة.'),
-                    Checkbox::make('had_medical_treatment')
-                        ->required()
-                        ->label('أقر بموافقتي على الالتزام بالقواعد المطبقة علي أثناء مشاركتي في البرنامج والتزامي بالشروط الموضوعة والتي يوجهها لي المنظمون وممثليهم .							'),
-                ])
             ]);
     }
 
