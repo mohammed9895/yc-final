@@ -11,6 +11,10 @@ class CatchTheFlagCompetition extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'teammates' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
