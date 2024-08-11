@@ -49,7 +49,7 @@ class User extends Authenticatable implements HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return '/storage/'.$this->avatar;
+        return '/storage/' . $this->avatar;
     }
 
     public function isAdmin()
@@ -174,5 +174,15 @@ class User extends Authenticatable implements HasAvatar
         return $this->forceFill([
             'phone_verified_at' => $this->freshTimestamp(),
         ])->save();
+    }
+
+    public function OprationsTrainingApplications()
+    {
+        return $this->hasOne(OperationsTrainingApplications::class);
+    }
+
+    public function catchTheFlagCompetitions()
+    {
+        return $this->hasMany(CatchTheFlagCompetition::class);
     }
 }

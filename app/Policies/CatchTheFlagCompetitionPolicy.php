@@ -12,7 +12,7 @@ class CatchTheFlagCompetitionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_catch_the_flag_competition');
+        return $user->can('view_any_catch::the::flag::competition');
     }
 
     /**
@@ -20,7 +20,7 @@ class CatchTheFlagCompetitionPolicy
      */
     public function view(User $user, CatchTheFlagCompetition $catchTheFlagCompetition): bool
     {
-        return $user->can('view_catch_the_flag_competition');
+        return $user->can('view_catch::the::flag::competition');
     }
 
     /**
@@ -28,7 +28,7 @@ class CatchTheFlagCompetitionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_catch_the_flag_competition');
+        return $user->can('create_catch::the::flag::competition');
     }
 
     /**
@@ -36,7 +36,7 @@ class CatchTheFlagCompetitionPolicy
      */
     public function update(User $user, CatchTheFlagCompetition $catchTheFlagCompetition): bool
     {
-        return $user->can('update_catch_the_flag_competition');
+        return $user->can('update_catch::the::flag::competition');
     }
 
     /**
@@ -44,7 +44,7 @@ class CatchTheFlagCompetitionPolicy
      */
     public function delete(User $user, CatchTheFlagCompetition $catchTheFlagCompetition): bool
     {
-        return $user->can('delete_catch_the_flag_competition');
+        return $user->can('delete_catch::the::flag::competition');
     }
 
     /**
@@ -52,7 +52,7 @@ class CatchTheFlagCompetitionPolicy
      */
     public function restore(User $user, CatchTheFlagCompetition $catchTheFlagCompetition): bool
     {
-        return $user->can('restore_catch_the_flag_competition');
+        return $user->can('restore_catch::the::flag::competition');
     }
 
     /**
@@ -60,6 +60,6 @@ class CatchTheFlagCompetitionPolicy
      */
     public function forceDelete(User $user, CatchTheFlagCompetition $catchTheFlagCompetition): bool
     {
-        return $user->can('forceDelete_');
+        return $user->can('force_delete_catch::the::flag::competition');
     }
 }
