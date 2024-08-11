@@ -1,4 +1,47 @@
 <x-filament::page>
+    <div class="col-span-full">
+        <div id="maalomat-asasy"
+             class="filament-forms-section-component rounded-xl border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
+            <div
+                class="filament-forms-section-header-wrapper flex rtl:space-x-reverse overflow-hidden rounded-t-xl min-h-[56px] px-4 py-2 items-center bg-gray-100 dark:bg-gray-900">
+                <div class="filament-forms-section-header flex-1 space-y-1">
+                    <h3 class="font-bold tracking-tight pointer-events-none flex flex-row items-center text-xl">
+                        ضوابط المشاركة
+                    </h3>
+                    <p>
+                        مسابقة تنافسية تهدف إلى اختبار مهارات الأمن السيبراني وقدرات الاختراق الإيجابية، يتنافس
+                        المشاركون في حل تحديات تقنية وأمنية. تعزز المسابقة للمشاركين في تطوير مهاراتهم والتعلم التجريبي
+                        مشابهًا لبيئة العمل وكسب الثقة وعرض مهاراتهم وخبراتهم للشركات والمؤسسات.
+
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="filament-forms-section-content-wrapper">
+                <div class="filament-forms-section-content p-6">
+                    <div class="grid grid-cols-1 filament-forms-component-container gap-6">
+                        <ul>
+                            <ul>
+                                <li>تاريخ المسابقة: 16 أغسطس 2024</li>
+                                <li>الوقت:9:00٠ صباحًا - 5:00 مساءً
+                                </li>
+                                <li>الموقع: مجمع السلطان قابوس الشبابي للثقافة والترفيه، محافظة ظفار.
+                                </li>
+                                <li>الفريق يتكون من ٣ أفراد.
+                                </li>
+                                <li>الجوائز:
+                                </li>
+                                <li>المركز الأول: 1500 ريال</li>
+                                <li>المركز الثاني: 1200 ريال</li>
+                                <li>المركز الثالث: 1000 ريال</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @if($open)
         @if($isRegistered > 0)
             <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
