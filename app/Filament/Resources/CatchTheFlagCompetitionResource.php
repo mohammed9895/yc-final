@@ -7,6 +7,11 @@ use App\Filament\Resources\CatchTheFlagCompetitionResource\Pages;
 use App\Filament\Resources\CatchTheFlagCompetitionResource\RelationManagers;
 use App\Models\CatchTheFlagCompetition;
 use Carbon\Carbon;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -23,7 +28,65 @@ class CatchTheFlagCompetitionResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Grid::make(1)
+                    ->schema([
+                        Radio::make('previous_participation')
+                            ->label('هل شاركت مسبقا في برامج تدريب الأمن السيبراني لمركز الشباب؟')
+                            ->options([
+                                'yes' => 'نعم',
+                                'no' => 'لا',
+                            ])
+                            ->required(),
+
+                        Radio::make('open_source_usage')
+                            ->label('هل قمت باستخدام أنظمة مفتوحة المصدر مثل: Kali Linux؟')
+                            ->options([
+                                'yes' => 'نعم',
+                                'no' => 'لا',
+                            ])
+                            ->required(),
+
+                        TextInput::make('kali_linux_usage')
+                            ->label('اذكر استخدامًا رئيسيًا لنظام كالي لينكس')
+                            ->required(),
+
+                        Textarea::make('ethical_hacking_definition')
+                            ->label('ما هو الاختراق الأخلاقي بكلماتك الخاصة؟')
+                            ->required(),
+
+                        TextInput::make('network_scanning_tool')
+                            ->label('أي أداة تستخدمها لمسح الشبكة للبحث عن المنافذ المفتوحة ونقاط الضعف؟')
+                            ->required(),
+
+                        TextInput::make('password_cracking_tool')
+                            ->label('أي أداة قد تكون خيارك الأول عند محاولة كسر كلمات المرور؟')
+                            ->required(),
+
+                        TextInput::make('cyber_attack_type')
+                            ->label('اذكر نوعًا واحدًا من الهجمات السيبرانية التي تعرفها')
+                            ->required(),
+
+                        TextInput::make('metasploit_usage')
+                            ->label('لأي غرض ستستخدم إطار العمل Metasploit؟')
+                            ->required(),
+
+                        TextInput::make('other_os_for_pentesting')
+                            ->label('بجانب Kali Linux، اذكر نظام تشغيل آخر يُستخدم بشكل شائع لاختبار الاختراق')
+                            ->required(),
+
+                        TextInput::make('hashing_algorithm')
+                            ->label('حدد خوارزمية تجزئة واحدة تعرفها')
+                            ->required(),
+
+                        Repeater::make('teammates')
+                            ->label('معلومات الفريق')
+                            ->schema([
+                                TextInput::make('fullname')
+                                    ->label('الاسم الكامل')->required(),
+                                TextInput::make('age')->label('العمر')->required(),
+                                TextInput::make('phone')->label('الهاتف'),
+                            ]),
+                    ]),
             ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Notifications\SmsMessage;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -33,14 +34,15 @@ class CatchTheFlagCompetition extends Page
     public function mount(): void
     {
         $this->form->fill();
-        $this->isRegistered = \App\Models\CatchTheFlagCompetition::where('user_id', '=', auth()->id())->count();
+//        $this->isRegistered = \App\Models\CatchTheFlagCompetition::where('user_id', '=', auth()->id())->count();
+        $this->isRegistered = 0;
     }
 
     public function register()
     {
         $orginal = $this->form->getState();
         $orginal['user_id'] = auth()->id();
-        $booking = \App\Models\CatchTheFlagCompetition::create($orginal);
+        $booking = \App\Models\CatchTheFlagCompetition::updateOrCreate(['user_id' => $orginal['user_id']], $orginal);
         if ($booking) {
             $sms = new SmsMessage;
             if (auth()->user()->preferred_language == 'ar') {
@@ -113,6 +115,15 @@ class CatchTheFlagCompetition extends Page
                     TextInput::make('hashing_algorithm')
                         ->label('حدد خوارزمية تجزئة واحدة تعرفها')
                         ->required(),
+
+                    Repeater::make('teammates')
+                        ->label('معلومات الفريق')
+                        ->schema([
+                            TextInput::make('fullname')
+                                ->label('الاسم الكامل')->required(),
+                            TextInput::make('age')->label('العمر')->required(),
+                            TextInput::make('phone')->label('الهاتف'),
+                        ]),
                 ]),
         ];
     }
