@@ -1,4 +1,5 @@
 <x-filament::page>
+    <img src="{{ asset('images/Asset 2.svg') }}" width="200" alt="">
     <form wire:submit.prevent="register">
         {{ $this->form }}
         <button
