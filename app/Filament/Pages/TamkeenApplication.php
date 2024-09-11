@@ -27,6 +27,8 @@ class TamkeenApplication extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.tamkeen-application';
 
+    protected static ?string $slug = 'tmakon';
+
     protected static function getNavigationLabel(): string
     {
         return __('Tmakon Application');
@@ -34,7 +36,7 @@ class TamkeenApplication extends Page implements HasForms, HasTable
 
     public function getTitle(): string
     {
-        return __('Tamkeen Application');
+        return __('Tmakon Application');
     }
 
     public function mount(): void
@@ -58,7 +60,7 @@ class TamkeenApplication extends Page implements HasForms, HasTable
                     ->send();
             } else {
                 $sms->to(auth()->user()->phone)
-                    ->message('Thank you, Your request have been sent to register in Tamkeen Program')
+                    ->message('Thank you, Your request have been sent to register in Tmakon Program')
                     ->lang(auth()->user()->preferred_language)
                     ->send();
             }
